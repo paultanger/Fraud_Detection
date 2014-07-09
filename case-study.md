@@ -22,13 +22,13 @@ You are a contract data scientist/consultant hired by a new e-commerce site to t
 
 Something that you will (need to) think about throughout this sprint is how the product of your client fits into the give technical process.  A few points to note about the case of fraud:
     
-    * Failures are not created equal
-        * False positives decrease customer/user trust
-        * False negatives cost money
-            * Not all false negative cost the same amount of $$$
-    * Accessibility
-        * Other (non-technical) people may need to interact with the model/machinery
-        * Manual review
+* Failures are not created equal
+    * False positives decrease customer/user trust
+    * False negatives cost money
+        * Not all false negative cost the same amount of $$$
+* Accessibility
+    * Other (non-technical) people may need to interact with the model/machinery
+    * Manual review
 
 The fraud problem is actually semi-supervised in a way.  You do not use the model to declare a ground truth about fraud or not fraud, but simply to flag which transactions need further manual review.  We will essentially be building a triage model of what the most pressing (and costly) transaction we have seen.
 
