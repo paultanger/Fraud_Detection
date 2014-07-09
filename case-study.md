@@ -21,6 +21,7 @@ You are a contract data scientist/consultant hired by a new e-commerce site to t
 ### The "product" of fraud
 
 Something that you will (need to) think about throughout this sprint is how the product of your client fits into the give technical process.  A few points to note about the case of fraud:
+    
     * Failures are not created equal
         * False positives decrease customer/user trust
         * False negatives cost money
@@ -87,6 +88,8 @@ Should be accessible on AWS.
 ### Step 5: Present
 
 Create a 3 minute presentation on your model, the application/interface, its performance, and any information you think is pertinent to the client.
+
+You will be presenting Friday afternoon.
 
 ### Extra
 
