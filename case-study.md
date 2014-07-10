@@ -36,6 +36,8 @@ The fraud problem is actually semi-supervised in a way.  You do not use the mode
 
 Before we dive into things we will need to scope the problem.  In the scoping stage we will define key metrics that we will use to measure success and outline the general steps you will take (with estimated time to completion).
 
+* [Thinking with Data](http://www.slideshare.net/mortardata/tw-d-slides-2)
+
 #### [Deliverable]: Scoping document
 
 1. A high level description of your approach in tackling this data science project:
