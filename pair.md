@@ -2,7 +2,7 @@
 
 You are a contract data scientist/consultant hired by a new e-commerce site to try to weed out fraudsters.  The company unfortunately does not have much data science expertise... so you must properly scope and present your solution to the manager before you embark on your analysis.  Also, you will need to build a sustainable software project that you can hand off to the companies engineers by deploying your model in the cloud.  Since others will potentially use/extend your code you **NEED** to properly encapsulate your code and leave plenty of comments.
 
-#### NOTE: This data is VERY sensitive! It is called train.json and is on the desktop of the mac mini. Do not share this data with anyone or copy any of it off the Mac mini's.  Do not include the data file in your pull request!  You will be required to work on the project in the classroom.
+#### NOTE: This data is VERY sensitive! It is called `train.json` and is location in `/Users/Zipfian/datasets/case-study` on the mac mini. Do not share this data with anyone or copy any of it off the cac minis!  Do not include the data file in your pull request!  You will be required to work on the project in the classroom.
 
 ### Deliverables (i.e. what you will be graded on)
 
