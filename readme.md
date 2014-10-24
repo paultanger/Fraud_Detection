@@ -1,4 +1,4 @@
-For the next three days we will deal with the entire end to end pipeline of data science through a case study.  We have touched on aspects of this throughout the course but have not yet put all the pieces together.
+For the next two days we will deal with the entire end to end pipeline of data science through a case study.  We have touched on aspects of this throughout the course but have not yet put all the pieces together.
 
 We will also touch on some new topics including:
 * cloud services including AWS
@@ -15,9 +15,8 @@ We will also touch on some new topics including:
 
 #### Rough timeline 
 
-* Wed.: Project scoping and Model building
+* Wednesday: Project scoping, Model building, and an intro to Web apps
 * Thursday: Web app and deployment
-* Fri.: presentation -- slideshow and data viz
 
 #### Deliverables
 
@@ -30,3 +29,7 @@ We will also touch on some new topics including:
 
 * You will be assessed both on quality and cleanliness of code
 * as well as a well functioning solution
+
+#### Notes
+
+* [building your model](model_notes.md): notes on how to get started with the dataset and how to save your model once you've trained it.
