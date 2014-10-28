@@ -22,7 +22,6 @@ We will also touch on some new topics including:
 
 * model (properly commented and encapsulated on Github with a README)
 * exposed API
-* 3 min. presentation
 * Data visualization (extra)
 
 #### Assessment
