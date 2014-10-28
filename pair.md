@@ -1,11 +1,10 @@
 ## Premise
-
 You are a contract data scientist/consultant hired by a new e-commerce site to try to weed out fraudsters.  The company unfortunately does not have much data science expertise... so you must properly scope and present your solution to the manager before you embark on your analysis.  Also, you will need to build a sustainable software project that you can hand off to the companies engineers by deploying your model in the cloud.  Since others will potentially use/extend your code you **NEED** to properly encapsulate your code and leave plenty of comments.
 
 #### NOTE: This data is VERY sensitive! It is called `train.json` and is location in `/Users/Zipfian/datasets/case-study` on the mac mini. Do not share this data with anyone or copy any of it off the cac minis!  Do not include the data file in your pull request!  You will be required to work on the project in the classroom.
 
-### Deliverables (i.e. what you will be graded on)
 
+### Deliverables (i.e. what you will be graded on)
 * Scoping document (in Markdown)
 * Code on private fork of repo on Github
     * proper functions/encapsulation
@@ -18,8 +17,8 @@ You are a contract data scientist/consultant hired by a new e-commerce site to t
     * Triage importance of transactions (low risk, medium risk, high risk)
     * Extra: D3 based visualization of data/trend
 
-### The "product" of fraud
 
+### The "product" of fraud
 Something that you will (need to) think about throughout this sprint is how the product of your client fits into the give technical process.  A few points to note about the case of fraud:
 
 * Failures are not created equal
@@ -32,31 +31,62 @@ Something that you will (need to) think about throughout this sprint is how the 
 
 The fraud problem is actually semi-supervised in a way.  You do not use the model to declare a ground truth about fraud or not fraud, but simply to flag which transactions need further manual review.  We will essentially be building a triage model of what the most pressing (and costly) transaction we have seen.
 
-### Step 1: Scope the problem
 
-Before we dive into things we will need to scope the problem.  In the scoping stage we will define key metrics that we will use to measure success and outline the general steps you will take (with estimated time to completion).
+### Step 1: EDA
+Before we start building the model, let's start with some EDA.
 
-* [Thinking with Data](http://www.slideshare.net/mortardata/tw-d-slides-2)
+#### [Deliverable]: Look at the data
+Let's start by looking at the data.
 
-#### [Deliverable]: Scoping document
+1. Load the data in with pandas. Add a 'Fraud' column that contains True or False values depening if the event is fraud.
 
-1. A high level description of your approach in tackling this data science project:
-    1. What steps did you take first (e.g. data exploration, visualization, statistical analyses)?
-    2. What insights were generated from this exploration?
-    3. Which modeling and preprocessing algorithms did you consider using to solve this problem?
-        * What are the respective strengths/weaknesses of these tactics?
-    4. Which modeling and preprocessing algorithms did you experiment with prior to producing your optimal model?
-        * What were the results of these attempts: strengths/weaknesses, decision process behind acceptance/rejection, further insights into the data set?
-        * What validation and testing methodology did you use?
-    5. Success metric
+2. Check how many fraud and not fraud events you have.
 
-### Step 2: The Model
+3. Look at the features. Make note of ones you think will be particularly useful to you.
+
+4. Do any data visualization that helps you understand the data.
+
+
+#### [Deliverable]: Scoping the problem
+Before you get cranking on your model, let's think of how to approach the problem.
+
+1. Think of what preprocessing you might want to do. How will you build your feature matrix? What different ideas do you have?
+
+2. What models do you want to include in your grid search?
+
+3. What metric will you use to determine success?
+
+
+### Step 2: Building the Model
+
+#### [Deliverable]: Comparing models
+Now start building your potential models.
+
+**Notes for writing code:**
+* As you write your code, **always be committing** (ABC) to Github!
+* Write **clean and modular code**.
+* Include **comments** on every method.
+
+*Make sure to get a working model first before you try all of your fancy ideas!*
+
+1. If you have complicated ideas, implement the simplest one first! Get a baseline built so that you can compare more complicated models to that one.
+
+2. Experiment with using different features in your feature matrix. Use different featurization techniques like stemming, lemmatization, tf-idf, part of speech tagging, etc.
+
+3. Experiment with different models like SVM, Logistic Regression, Decision Trees, kNN, etc. You might end up with a final model that is a combination of multiple classification models.
+
+4. Compare their results. Make sure to do good comparison and don't just use accuracy!
+
 
 #### [Deliverable]: Model description and code
-* You may use any one (or multiple) supervised learning techniques to create this classification model, and any natural language pre-processing that you find generates the best results.
-* Try comparing different models we have encountered (SVM, Logistic Regression, Decision Trees, kNN) as well as different featurization techniques (stemming vs lemmatization, tf-idf vs. bag of words, part of speach tagging, etc.)
-* Feel free to use any library to get the job done.
-* In your pull request, describe your project findings including:
+After all this experimentation, you should end up with a model you are happy with.
+
+1. Create a file called `model.py` which builds the model based on the training data.
+
+    * Feel free to use any library to get the job done.
+    * Again, make sure your code is **clean**, **modular** and **well-commented**! The general rule of thumb: if you looked at your code in a couple months, would you be able to understand it?
+
+2. In your pull request, describe your project findings including:
     * An overview of a chosen “optimal” modeling technique, with:
         * process flow
         * preprocessing
@@ -64,25 +94,25 @@ Before we dive into things we will need to scope the problem.  In the scoping st
         * validation and testing methodology
         * parameter tuning involved in generating the model
         * further steps you might have taken if you were to continue the project.
-* Always be committing (ABC) to Github
-    * clean and modular code
-    * Comments for every method
+
 
 #### [Deliverable]: Pickled model
 
-Use `cPickle` to serialize your trained model and store it in a file. This is going to allow you to use the model without retraining it for every prediction, which would be ridiculous.
+1. Use `cPickle` to serialize your trained model and store it in a file. This is going to allow you to use the model without retraining it for every prediction, which would be ridiculous.
 
 ### Step 3: Prediction script
 
 Take a few raw examples and store them in json or csv format in a file called `test_script_examples` or the like.
 
+
 #### [Deliverable]: Prediction script
 
-Write a script `predict.py` that reads in a single example from `test_script_examples`, vectorizes it, unpickles the model, predicts the label, and outputs the label probability (print to standard out is fine).
+1. Write a script `predict.py` that reads in a single example from `test_script_examples`, vectorizes it, unpickles the model, predicts the label, and outputs the label probability (print to standard out is fine).
 
-This script will serve as a sort of conceptual and code bridge to the web app you're about to build.
+    This script will serve as a sort of conceptual and code bridge to the web app you're about to build.
 
-Each time you run the script, it will predict on one example, just like a web app request. You may be thinking that unpickling the model everytime is quite inefficient and you'd be right; we'll remove that inefficiency in the web app.
+    Each time you run the script, it will predict on one example, just like a web app request. You may be thinking that unpickling the model everytime is quite inefficient and you'd be right; we'll remove that inefficiency in the web app.
+
 
 ### Step 4: Database
 
@@ -90,38 +120,43 @@ Each time you run the script, it will predict on one example, just like a web ap
 
 We want to store each prediction the model makes on new examples, which means we'll need a database.
 
-Set up a postgres database that will store each example that the script runs on. You should create a database schema that reflects the form of the raw example data and add a column for the predicted probability of fraud.
+1. Set up a postgres database that will store each example that the script runs on. You should create a database schema that reflects the form of the raw example data and add a column for the predicted probability of fraud.
 
-Write a function in your script that takes the example data and the prediction as arguments and inserts the data into the database.
+2. Write a function in your script that takes the example data and the prediction as arguments and inserts the data into the database.
 
-Now, each time you run your script, one row should be added to the `predictions` table with a predicted probability of fraud.
+    Now, each time you run your script, one row should be added to the `predictions` table with a predicted probability of fraud.
+
 
 ### Step 5: Web App
 
 #### [Deliverable]: Hello World app
 
-A request in your browser to `/hello` should display "Hello, World!". Set up a Flask app with a route `GET /hello` to do so.
+1. A request in your browser to `/hello` should display "Hello, World!". Set up a Flask app with a route `GET /hello` to do so.
 
-Use this [tutorial](http://blog.luisrei.com/articles/flaskrest.html) to help.
+    Use this [tutorial](http://blog.luisrei.com/articles/flaskrest.html) to help.
 
 #### [Deliverable]: Fraud scoring service
 
-Set up a route `POST /score` and have it execute the logic in your prediction script. You should import the script as a module and call functions defined therein.
+1. Set up a route `POST /score` and have it execute the logic in your prediction script. You should import the script as a module and call functions defined therein.
 
-There are two things we'll do to make this all more efficient: 1. We only want to unpickle the model once, and 2. We only want to connect to the database once. Do both in a `if __name__ == '__main__':` block before you call `app.run()` and you can refer to these top-level global variables from within the function. This may require some re-architecting of your prediction module.
+    There are two things we'll do to make this all more efficient: 1. We only want to unpickle the model once, and 2. We only want to connect to the database once. Do both in a `if __name__ == '__main__':` block before you call `app.run()` and you can refer to these top-level global variables from within the function. This may require some re-architecting of your prediction module.
 
-The individual example will no longer be coming from a local file, but instead will come in the body of the POST request as JSON. You can use `request.data` or `request.json` to access that data. You'll still need to vectorize it, predict, and store the example and prediction in the database.
+    The individual example will no longer be coming from a local file, but instead will come in the body of the POST request as JSON. You can use `request.data` or `request.json` to access that data. You'll still need to vectorize it, predict, and store the example and prediction in the database.
 
-You can test out this route by, in a separate script, sending a POST request to /score with a single example in JSON form using the `requests` Python package.
+    You can test out this route by, in a separate script, sending a POST request to /score with a single example in JSON form using the `requests` Python package.
+
 
 ### Step 6: Get "live" data
 
 We've set up a service for you that will ping your server with "live" data so that you can see that it's really working.
 
 To use this service:
-    * Send a POST request to `/register` with your IP and port (as `ip` and `port` parameters in JSON). We'll announce what the ip address of the service machine is in class. Write this code in the `if name` block at the bottom of your Flask script (i.e. it should register each time you run the Flask script)
+    * Send a POST request to `/register` with your IP and port (as `ip` and `port` parameters in JSON). We'll announce what the ip address of the service machine is in class.
 
-Make sure your app is adding the examples to the database with predicted fraud probabilities.
+1. Write a register function which makes the necessary post request. This function should be called once each time your Flask app is run, in the main block.
+
+**Make sure your app is adding the examples to the database with predicted fraud probabilities.**
+
 
 ### Step 7: Dashboard
 
@@ -133,6 +168,7 @@ We want to present potentially fraudulent transactions with their probability sc
 * Read data from postgres
 * Return HTML with the data
     * To generate the HTML from the json data from the database, either just use simple string concatenation or Jinja2 templates.
+
 
 ### Step 8: Deploy!
 
@@ -149,15 +185,9 @@ Should be accessible on AWS.
 * Make it work (debug, debug, debug)
 * Profits!
 
-### Step 9: Present
-
-Create a 3 minute presentation on your model, the application/interface, its performance, and any information you think is pertinent to the client.
-
-You will be presenting Friday afternoon.
 
 ### Extra
 
 * Make your dashboard interactive. Allow a dashboad user to clear or flag fraud events. Come up with other features that might be useful.
 
 * Create a D3 visualization for your web based frontend.  You might want to visualize any number of metrics/data.  Use your creativity to create something that makes sense for a end user in terms of what data you present.
-
