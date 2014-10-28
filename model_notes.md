@@ -39,7 +39,7 @@ if __name__ == '__main__':
     X, y = get_data('data/train.json')
     model = MyModel()
     model.fit(X, y)
-    with open('model.pkl', 'wb') as f:
+    with open('model.pkl', 'w') as f:
         pickle.dump(model, f)
 ```
 
@@ -47,7 +47,7 @@ Now I can reload the model from the pickle and use it to predict! No need to ret
 
 ```python
 with open('model.pkl') as f:
-    model = pickle.load(f, 'rb')
+    model = pickle.load(f)
 
 model.predict(...)
 ```
