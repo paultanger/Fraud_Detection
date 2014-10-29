@@ -1,7 +1,7 @@
 # The data
 Again, to reiterate, this data is **very confidential**. Please do not put it on your personal machine or anywhere besides the mac minis!
 
-There are two files: `train.json`. You should start with using just the training set and cross validate within the training set. Once you've built your final model, you can use the test set to see the true accuracy (and other metrics).
+The data is in `train.json`. You should start with using just the training set and cross validate within the training set. Once you've built your final model, you can use the test set to see the true accuracy (and other metrics).
 
 This is event data and you need to determine if it's fraud. We start by taking a look at the data (use `pd.read_json`). There are 55 columns! What do these all mean? Many of them won't be useful for you, so a big part of the task is feature extraction.
 
