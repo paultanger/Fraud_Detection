@@ -31,6 +31,7 @@ Something that you will (need to) think about throughout this sprint is how the 
 
 The fraud problem is actually semi-supervised in a way.  You do not use the model to declare a ground truth about fraud or not fraud, but simply to flag which transactions need further manual review.  We will essentially be building a triage model of what the most pressing (and costly) transaction we have seen.
 
+## Day 1: Morning
 
 ### Step 1: EDA
 Before we start building the model, let's start with some EDA.
@@ -77,6 +78,7 @@ Now start building your potential models.
 
 4. Compare their results. Make sure to do good comparison and don't just use accuracy!
 
+## Day 1: Afternoon
 
 #### [Deliverable]: Model description and code
 After all this experimentation, you should end up with a model you are happy with.
@@ -126,6 +128,7 @@ We want to store each prediction the model makes on new examples, which means we
 
     Now, each time you run your script, one row should be added to the `predictions` table with a predicted probability of fraud.
 
+## Day 2: Morning
 
 ### Step 5: Web App
 
@@ -157,6 +160,7 @@ To use this service:
 
 **Make sure your app is adding the examples to the database with predicted fraud probabilities.**
 
+## Day 2: Afternoon
 
 ### Step 7: Dashboard
 
