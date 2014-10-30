@@ -2,7 +2,7 @@ from flask import Flask,request
 import flask_restful as restful
 from apscheduler.schedulers.blocking import BlockingScheduler
 import os
-from requests import post,put
+from requests import post
 import simplejson
 import random
 import pytz
@@ -128,16 +128,14 @@ with open('test.json') as f:
         if column not in white_list:
               data.drop(column, axis=1, inplace=True)
     num_data_points = data.shape[0]
-
+    print get_object()
 
 
 
 if __name__ == '__main__':
     scheduler = BlockingScheduler(timezone=pytz.utc)
 
-    scheduler.add_executor('processpool')
     #10 seconds from now
-    #scheduler.add_job(start_api,'date',run_date=datetime.datetime.now(),timezone=pytz.utc)
     scheduler.add_job(ping, 'interval', seconds=1)
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
