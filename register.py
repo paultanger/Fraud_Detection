@@ -11,7 +11,7 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 import logging
-
+import pandas as pd
 
 logging.basicConfig()
 
@@ -23,76 +23,79 @@ urls = []
 
 white_list = [
     "body_length",
-"event_end",
-"ip",
-"venue_latitude",
-"event_published",
-"channels",
-"currency",
-"org_desc",
-"name_length",
-"event_created",
-"approx_payout_date",
-"has_logo",
-"email_domain",
-"payout_type",
-"show_map",
-"has_header",
-"venue_state",
-"venue_country",
-"has_analytics",
-"delivery_method",
-"country",
-"name",
-"num_payouts",
-"sale_duration",
-"previous_payouts",
-"fb_published",
-"venue_longitude",
-"description",
-"org_name",
-"user_age",
-"org_facebook",
-"listed",
-"org_twitter",
-"event_start",
-"venue_address",
-"sale_duration2",
-"venue_name"
+    "event_end",
+    "ip",
+    "venue_latitude",
+    "event_published",
+    "channels",
+    "currency",
+    "org_desc",
+    "name_length",
+    "event_created",
+    "approx_payout_date",
+    "has_logo",
+    "email_domain",
+    "payout_type",
+    "show_map",
+    "has_header",
+    "venue_state",
+    "venue_country",
+    "has_analytics",
+    "delivery_method",
+    "country",
+    "name",
+    "num_payouts",
+    "sale_duration",
+    "previous_payouts",
+    "fb_published",
+    "venue_longitude",
+    "description",
+    "org_name",
+    "user_age",
+    "org_facebook",
+    "listed",
+    "org_twitter",
+    "event_start",
+    "venue_address",
+    "sale_duration2",
+    "venue_name"
 ]
 
 
 def start_server():
-       if 'apps' in apps:
-           return
-       try:
-           apps['apps'] = Flask(__name__)
-           api = restful.Api(apps['apps'])
-           api.add_resource(Register, '/register')
-           http_server = HTTPServer(WSGIContainer(apps['apps']))
-           http_server.listen(5000,'0.0.0.0')
-       except:
-           pass
+    if 'apps' in apps:
+        return
+    try:
+        apps['apps'] = Flask(__name__)
+        api = restful.Api(apps['apps'])
+        api.add_resource(Register, '/register')
+        http_server = HTTPServer(WSGIContainer(apps['apps']))
+        http_server.listen(5000,'0.0.0.0')
+    except:
+        pass
 
-
+def get_object():
+    random_json = data.loc[[random.randint(0,num_data_points)]].to_json()
+    as_dict =  simplejson.loads(random_json)
+    ret = {}
+    first_key = None
+    for key in as_dict.keys():
+        if(first_key is None):
+            first_key = as_dict.itervalues().next().keys()[0]
+        ret[key] = as_dict[key][first_key]
+    return ret
 
 
 def ping():
     if 'apps' not in apps:
-      start_server()
-      thread = Thread(target = IOLoop.instance().start)
-      thread.start()
+        start_server()
+        thread = Thread(target = IOLoop.instance().start)
+        thread.start()
 
     for url in urls:
         print 'url',url
-        random_json = random.choice(data)
-        for key in random_json.keys():
-             #drop out: deal with it
-             if key is 'description':
-                 if random.random() > 0.5:
-                     random_json['description'] = ''
-             if key not in white_list:
-                 del random_json[key]
+
+        random_json = get_object()
         headers = {'Content-Type': 'application/json'}
         post(url + '/score',data=simplejson.dumps(random_json),headers=headers)
 
@@ -120,7 +123,12 @@ class Register(restful.Resource):
 
 with open('test.json') as f:
     contents = f.read()
-    data = simplejson.loads(contents)
+    data = pd.read_json('test.json')
+    for column in data.columns:
+        if column not in white_list:
+              data.drop(column, axis=1, inplace=True)
+    num_data_points = data.shape[0]
+    print get_object()
 
 
 
