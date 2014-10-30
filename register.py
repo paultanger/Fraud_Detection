@@ -128,7 +128,6 @@ with open('test.json') as f:
         if column not in white_list:
               data.drop(column, axis=1, inplace=True)
     num_data_points = data.shape[0]
-    print get_object()
 
 
 
