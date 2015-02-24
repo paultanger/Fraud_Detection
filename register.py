@@ -11,6 +11,7 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 import pandas as pd
+import sys
 
 
 class Register(restful.Resource):
@@ -34,8 +35,10 @@ class Server(object):
         self.data = None
         self.app = None
 
-    def load_data(self, filename):
-        return pd.read_json(filename)
+    def load_data(self, filename, label='acct_type'):
+        data = pd.read_json(filename)
+        data.drop(label, axis=1, inplace=True)
+        return data
 
     def start_server(self):
         try:
@@ -85,5 +88,9 @@ class Server(object):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print "Usage: python register.py filename.json"
+        exit()
+    filename = sys.argv[1]
     server = Server()
-    server.run()
+    server.run(filename)
