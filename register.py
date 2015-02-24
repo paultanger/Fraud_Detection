@@ -58,7 +58,7 @@ class Server(object):
     def ping(self):
         if not self.app:
             self.app = self.start_server()
-            thread = Thread(target = IOLoop.instance().start)
+            thread = Thread(target=IOLoop.instance().start)
             thread.start()
             print "Server started. Ready to receive posts."
         index, datapoint = self.get_random_datapoint()
@@ -73,12 +73,11 @@ class Server(object):
             except ConnectionError as e:
                 print "%s not listening." % url
 
-
     def run(self, filename='test.json'):
         self.data = self.load_data(filename)
         self.scheduler = BlockingScheduler(timezone=pytz.utc)
         self.scheduler.add_job(self.ping, trigger='interval', seconds=5)
-        print 'Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C')
+        print 'Press Ctrl+C to exit'
         try:
             self.scheduler.start()
         except:
