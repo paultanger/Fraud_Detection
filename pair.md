@@ -1,7 +1,14 @@
 ## Premise
 You are a contract data scientist/consultant hired by a new e-commerce site to try to weed out fraudsters.  The company unfortunately does not have much data science expertise... so you must properly scope and present your solution to the manager before you embark on your analysis.  Also, you will need to build a sustainable software project that you can hand off to the companies engineers by deploying your model in the cloud.  Since others will potentially use/extend your code you **NEED** to properly encapsulate your code and leave plenty of comments.
 
-#### NOTE: This data is VERY sensitive! It is called `train.json` and is location in `/Users/Zipfian/datasets/case-study` on the mac mini. Do not share this data with anyone or copy any of it off the mac minis!  Do not include the data file in your pull request!  You will be required to work on the project in the classroom.
+## The Data
+#### NOTE: This data is VERY sensitive!
+
+It is located on the mac minis in `~/datasets/fraud-detection-case-study`.
+
+***Do not share this data with anyone or copy any of it off the mac minis! Do not include the data file in your pull request!***
+
+You will be required to work on the project in the classroom.
 
 
 ### Deliverables (i.e. what you will be graded on)
@@ -39,7 +46,7 @@ Before we start building the model, let's start with some EDA.
 #### [Deliverable]: Look at the data
 Let's start by looking at the data.
 
-1. Load the data in with pandas. Add a 'Fraud' column that contains True or False values depening if the event is fraud.
+1. Load the data in with pandas. Add a 'Fraud' column that contains True or False values depening if the event is fraud. This is determined based on the `acct_type` field.
 
 2. Check how many fraud and not fraud events you have.
 
@@ -142,7 +149,12 @@ We want to store each prediction the model makes on new examples, which means we
 
 1. Set up a route `POST /score` and have it execute the logic in your prediction script. You should import the script as a module and call functions defined therein.
 
-    There are two things we'll do to make this all more efficient: 1. We only want to unpickle the model once, and 2. We only want to connect to the database once. Do both in a `if __name__ == '__main__':` block before you call `app.run()` and you can refer to these top-level global variables from within the function. This may require some re-architecting of your prediction module.
+    There are two things we'll do to make this all more efficient:
+
+    1. We only want to unpickle the model once
+    2. We only want to connect to the database once.
+    
+    Do both in a `if __name__ == '__main__':` block before you call `app.run()` and you can refer to these top-level global variables from within the function. This may require some re-architecting of your prediction module.
 
     The individual example will no longer be coming from a local file, but instead will come in the body of the POST request as JSON. You can use `request.data` or `request.json` to access that data. You'll still need to vectorize it, predict, and store the example and prediction in the database.
 
@@ -153,8 +165,17 @@ We want to store each prediction the model makes on new examples, which means we
 
 We've set up a service for you that will ping your server with "live" data so that you can see that it's really working.
 
-To use this service:
-    * Send a POST request to `/register` with your IP and port (as `ip` and `port` parameters in JSON). We'll announce what the ip address of the service machine is in class.
+To use this service, you will need to make a POST request to `ourcomputersip/register` with your IP and port. We'll announce what the ip address of the service machine is in class.
+
+Here is the code to register your machine:
+
+```python
+import requests
+reg_url = 'http://<to be filled in>/register:5000'
+requests.post(reg_url, data={'ip': my_ip, 'port': my_port})
+```
+
+You can get your computer's IP with the `socket` module as can be seen [here](http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib). The port is your choice.
 
 1. Write a register function which makes the necessary post request. This function should be called once each time your Flask app is run, in the main block.
 
