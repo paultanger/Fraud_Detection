@@ -26,7 +26,7 @@ You will be required to work on the project in the classroom.
 
 
 ### The "product" of fraud
-Something that you will (need to) think about throughout this sprint is how the product of your client fits into the give technical process.  A few points to note about the case of fraud:
+Something that you will (need to) think about throughout this sprint is how the product of your client fits into the given technical process.  A few points to note about the case of fraud:
 
 * Failures are not created equal
     * False positives decrease customer/user trust
@@ -46,7 +46,7 @@ Before we start building the model, let's start with some EDA.
 #### [Deliverable]: Look at the data
 Let's start by looking at the data.
 
-1. Load the data in with pandas. Add a 'Fraud' column that contains True or False values depening if the event is fraud. This is determined based on the `acct_type` field.
+1. Load the data in with pandas. Add a 'Fraud' column that contains True or False values depending on if the event is fraud. This is determined based on the `acct_type` field.
 
 2. Check how many fraud and not fraud events you have.
 
