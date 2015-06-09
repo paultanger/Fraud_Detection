@@ -60,7 +60,7 @@ Before you get cranking on your model, let's think of how to approach the proble
 
 1. Think of what preprocessing you might want to do. How will you build your feature matrix? What different ideas do you have?
 
-2. What models do you want to include in your grid search?
+2. What models do you want to try?
 
 3. What metric will you use to determine success?
 
