@@ -101,6 +101,7 @@ class Register(restful.Resource):
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print "Usage: python register.py test_filename.json"
+        exit()
     filename = sys.argv[1]
 
     if not os.path.isfile(filename):
