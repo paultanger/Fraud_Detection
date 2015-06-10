@@ -101,15 +101,19 @@ class Register(restful.Resource):
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print "Usage: python register.py test_filename.json"
+        exit()
+    print "It takes about 10-20 seconds to start."
     filename = sys.argv[1]
 
     if not os.path.isfile(filename):
         print "Invalid filename: {0}".format(filename)
         print "Goodbye."
 
+    print "Starting scheduler..."
     scheduler = BlockingScheduler(timezone=pytz.utc)
     scheduler.add_job(ping, 'interval', seconds=30, max_instances=100)
 
+    print "Loading data..."
     DATA = load_data(filename)
 
     print "Press Ctrl+C to exit"
