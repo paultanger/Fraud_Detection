@@ -92,7 +92,7 @@ class Register(restful.Resource):
         else:
             URLS.add(url)
             print "{0} is now registered".format(url)
-        return {'Message': 'Added url ' + url}
+        return {'Message': 'Added url {0}'.format(url)}
 
     def put(self):
         return simplejson.dumps(request.json)
@@ -102,15 +102,19 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print "Usage: python register.py test_filename.json"
         exit()
+    print "It can take up to 30 seconds to start."
     filename = sys.argv[1]
 
     if not os.path.isfile(filename):
         print "Invalid filename: {0}".format(filename)
         print "Goodbye."
+        exit()
 
+    print "Starting scheduler..."
     scheduler = BlockingScheduler(timezone=pytz.utc)
     scheduler.add_job(ping, 'interval', seconds=30, max_instances=100)
 
+    print "Loading data..."
     DATA = load_data(filename)
 
     print "Press Ctrl+C to exit"
