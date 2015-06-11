@@ -197,12 +197,11 @@ We want to present potentially fraudulent transactions with their probability sc
 
 ### Step 8: Deploy!
 
-Use the [aws sprint](https://github.com/zipfian/aws-and-the-cloud) as your guide if you need one.
+Use the [aws sprint](https://github.com/zipfian/high_performance_python/blob/master/individual.md) as your guide if you need one.
 
 Should be accessible on AWS.
 
 * Set up AWS instance
-    * Restrict IP address access to Data Warehouse (remember, data is sensitive!). You can do this on the aws website when configuring your instance.
 * Set up environment on your EC2 instance
 * Push your code to github
 * SSH into the instance and clone your repo
