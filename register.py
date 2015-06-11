@@ -21,7 +21,8 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 import pandas as pd
 import socket
-
+import logging
+logging.basicConfig()
 
 PORT = 5000
 IP = socket.gethostbyname(socket.gethostname())
@@ -111,7 +112,7 @@ if __name__ == '__main__':
 
     print "Starting scheduler..."
     scheduler = BlockingScheduler(timezone=pytz.utc)
-    scheduler.add_job(ping, 'interval', seconds=30, max_instances=100)
+    scheduler.add_job(ping, 'interval', seconds=10, max_instances=100)
 
     print "Loading data..."
     DATA = load_data(filename)
