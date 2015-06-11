@@ -199,7 +199,7 @@ We want to present potentially fraudulent transactions with their probability sc
 
 Use the [aws sprint](https://github.com/zipfian/high_performance_python/blob/master/individual.md) as your guide if you need one.
 
-**The data stream is not available to you on AWS. Change your web app to display only the predictions of the test set.**
+**The data stream is not available to you on AWS. Change your web app to display only the predictions of the test set. You can also change your app such that the results are not written to a database.**
 
 * Set up AWS instance
 * Set up environment on your EC2 instance
