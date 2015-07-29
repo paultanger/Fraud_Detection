@@ -4,7 +4,7 @@ You are a contract data scientist/consultant hired by a new e-commerce site to t
 ## The Data
 #### NOTE: This data is VERY sensitive!
 
-It is located on the mac minis in `~/datasets/fraud-detection-case-study`.
+It is located on the mac minis in `data/train_new`.
 
 ***Do not share this data with anyone or copy any of it off the mac minis! Do not include the data file in your pull request!***
 
