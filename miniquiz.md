@@ -8,7 +8,7 @@ In the interest of time and quick testing, just run your job on one of the topic
 
     Start by writing a version *without* using a combiner.
 
-    When you're taking the average, try to do the calculationg without converting your generator into a list.
+    When you're taking the average, try to do the calculating without converting your generator into a list.
 
 2. Now see if you can add the combiner. Your combiner in this case will be different from your reducer!
 
