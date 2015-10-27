@@ -120,7 +120,7 @@ Take a few raw examples and store them in json or csv format in a file called `t
 
     This script will serve as a sort of conceptual and code bridge to the web app you're about to build.
 
-    Each time you run the script, it will predict on one example, just like a web app request. You may be thinking that unpickling the model everytime is quite inefficient and you'd be right; we'll remove that inefficiency in the web app.
+    Each time you run the script, it will predict on one example, just like a web app request. You may be thinking that unpickling the model every time is quite inefficient and you'd be right; we'll remove that inefficiency in the web app.
 
 
 ### Step 4: Database
@@ -212,6 +212,6 @@ Use the [aws sprint](https://github.com/zipfian/high_performance_python/blob/mas
 
 ### Extra
 
-* Make your dashboard interactive. Allow a dashboad user to clear or flag fraud events. Come up with other features that might be useful.
+* Make your dashboard interactive. Allow a dashboard user to clear or flag fraud events. Come up with other features that might be useful.
 
 * Create a D3 visualization for your web based frontend.  You might want to visualize any number of metrics/data.  Use your creativity to create something that makes sense for a end user in terms of what data you present.
