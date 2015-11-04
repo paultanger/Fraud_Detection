@@ -6,7 +6,7 @@ We will also touch on some new topics including:
 * deploying a DS application
 * a touch of data visualization/presentation
 
-#### Themes (you be be assessed on this)
+#### Themes (you will be assessed on this)
 
 * Software best practices (proper encapsulation and functions)
 * product focus
