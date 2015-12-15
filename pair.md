@@ -129,7 +129,7 @@ Take a few raw examples and store them in json or csv format in a file called `t
 
 We want to store each prediction the model makes on new examples, which means we'll need a database.
 
-1. Set up a postgres database that will store each example that the script runs on. You should create a database schema that reflects the form of the raw example data and add a column for the predicted probability of fraud.
+1. Set up a Postgres or MongoDB database that will store each example that the script runs on. You should create a database schema that reflects the form of the raw example data and add a column for the predicted probability of fraud.
 
 2. Write a function in your script that takes the example data and the prediction as arguments and inserts the data into the database.
 
