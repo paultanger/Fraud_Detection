@@ -1,7 +1,9 @@
 # The data
 Again, to reiterate, this data is **very confidential**. Please do not put it on your personal machine or anywhere besides the mac minis!
 
-The data is in `data/train_new.tar.gz`. You will cross validate within this dataset to find the best model.
+The data is in `data/data.zip`. You can uncompress the data file with this command: `unzip data.zip`.
+
+You will cross validate within this dataset to find the best model.
 
 This is event data and you need to determine if it's fraud. We start by taking a look at the data (use `pd.read_json`). There are 55 columns! What do these all mean? Many of them won't be useful for you, so a big part of the task is feature extraction.
 
@@ -36,7 +38,7 @@ def get_data(datafile):
     return X, y
 
 if __name__ == '__main__':
-    X, y = get_data('data/train.json')
+    X, y = get_data('data/data.json')
     model = MyModel()
     model.fit(X, y)
     with open('model.pkl', 'w') as f:
