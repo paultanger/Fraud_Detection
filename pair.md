@@ -4,7 +4,7 @@ You are a contract data scientist/consultant hired by a new e-commerce site to t
 ## The Data
 #### NOTE: This data is VERY sensitive!
 
-It is located in `data/train_new.tar.gz`.
+It is located in `data/data.zip`.
 
 ***Do not share this data with anyone or copy any of it off the mac minis! Do not include the data file in your pull request!***
 
