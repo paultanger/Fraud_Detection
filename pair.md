@@ -153,33 +153,25 @@ We want to store each prediction the model makes on new examples, which means we
 
     1. We only want to unpickle the model once
     2. We only want to connect to the database once.
-    
+
     Do both in a `if __name__ == '__main__':` block before you call `app.run()` and you can refer to these top-level global variables from within the function. This may require some re-architecting of your prediction module.
 
-    The individual example will no longer be coming from a local file, but instead will come in the body of the POST request as JSON. You can use `request.data` or `request.json` to access that data. You'll still need to vectorize it, predict, and store the example and prediction in the database.
+    The individual example will no longer be coming from a local file, but instead you will get it by making an HTTP GET request to a server that will give you a data point as a string, which you can parse into JSON.  (You can use json.loads() to parse a string to json, which is the reverse process of json.dumps().)  You will still need to vectorize this example data point, predict, and store it along with your prediction in the database.
 
-    You can test out this route by, in a separate script, sending a POST request to /score with a single example in JSON form using the `requests` Python package.
+    You can test out this route by, in a separate script, sending a GET request to the /data_point route on the data server (hosted by us, see section below) using the `requests` Python package.
 
 
 ### Step 6: Get "live" data
 
-We've set up a service for you that will ping your server with "live" data so that you can see that it's really working.
+We've set up a service for you that will periodically release new, "live" data so that you can experience working with a dataset that is not static.
 
-To use this service, you will need to make a POST request to `ourcomputersip/register` with your IP and port. We'll announce what the ip address of the service machine is in class.
+To use this service, you will need to make a GET request to `http://galvanize-case-study-on-fraud.herokuapp.com/data_point`.
 
-Here is the code to register your machine:
-
-```python
-import requests
-reg_url = 'http://<to be filled in>/register:5000'
-requests.post(reg_url, data={'ip': my_ip, 'port': my_port})
-```
-
-You can get your computer's IP with the `socket` module as can be seen [here](http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib). The port is your choice.
-
-1. Write a register function which makes the necessary post request. This function should be called once each time your Flask app is run, in the main block.
+There are a few interesting aspects to the data flow that we want you to experience during this case study.  One aspect is that the dataset is *dynamic*, not static.  That means that while you do have a certain amount of training data, *more (unlabeled) data is generated all the time* that needs to be labeled (predicted).  Therefore you can't simply run a script locally, predict all your unknown data points, and save the result as, say, a .csv or into a database, as you might do with a static dataset.  Instead, to handle a dynamic dataset, you need a 'live' function that uses your model to predict a new data point on the fly.  So where does that new data point to predict come from?  When you're writing a data product, in this case a prediction service, you often set up a route on your server like /score, which scores/predicts an individual data point.  Indeed, you'll want to do that here.  Usually, you'll deploy your app to a place like AWS or Heroku or inside your company's network, where other machines can access it (ie, they can make a POST request to your /score endpoint, sending inside the POST request the new data point to be scored).  It can be a little hard to develop such an app, though, since while you're developing locally you'll likely be running the app on your laptop, usually within a network like Galvanize's or at, say, a cafe with WiFi, and requests can't come from elsewhere on the internet into your machine.  So we are going to use a slightly different flow here to get new data points.  Namely, you are going to make GET requests to a server (that we've set up for you) that offers up new data points every so often.  Once you make that GET request, you'll want to send the results of the request over to your own /score route to score them.  This simulates the experience of using a model on a new data point live, while allowing for easy local development.  (As an extension if you're feeling ambitious, you could create a route named something like /get_and_score, which would both GET a fresh new data point as well as score it.)  So, to summarize: make a GET request to `http://galvanize-case-study-on-fraud.herokuapp.com/data_point`, take the result and parse it into JSON, take that result and score it using your model, and save the resulting prediction along with the data point to your database of predicted fraud probabilities.
 
 **Make sure your app is adding the examples to the database with predicted fraud probabilities.**
+
+What's happening over at `http://galvanize-case-study-on-fraud.herokuapp.com/data_point`?  Well, there are 3 concurrent processes load-balanced behind that endpoint, so any request to that URL might end up being routed to one of three processes.  Each of those processes chooses a random data point (with replacement) and continues to serve it up for X seconds, where X is somewhere in the range of 10s-60s (secret ;).  You don't have control (by design) of which process your request gets sent to.  So, you might make three requests to that URL and hit one process once, one process twice, and one process not at all.  Assuming you flooded the server with many requests for a few seconds, you would get many responses, but only 3 of them would be unique.  If you continued to make requests and de-duplicate the results over a longer period of time, you would get a maximum of 3 unique data points every X seconds.
 
 ## Day 2: Afternoon
 
@@ -198,8 +190,6 @@ We want to present potentially fraudulent transactions with their probability sc
 ### Step 8: Deploy!
 
 Use [these instructions](https://github.com/zipfian/project-proposals/blob/master/host_app_on_amazon.md) as your guide if you need one.
-
-**The data stream is not available to you on AWS. Change your web app to display only the predictions of the test set. You can also change your app such that the results are not written to a database.**
 
 * Set up AWS instance
 * Set up environment on your EC2 instance
