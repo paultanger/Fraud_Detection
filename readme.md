@@ -1,34 +1,30 @@
-For the next two days we will deal with the entire end to end pipeline of data science through a case study.  We have touched on aspects of this throughout the course but have not yet put all the pieces together.
+# Fraud Detection Case Study
 
-We will also touch on some new topics including:
-* cloud services including AWS
-* web applications (and the technology of the web)
-* deploying a DS application
-* a touch of data visualization/presentation
+For the next two days we will work with the entire end to end pipeline of data science through a case study.  We have touched on aspects of this throughout the course but have not yet put all the pieces together.
 
-#### Themes (you will be assessed on this)
-
-* Software best practices (proper encapsulation and functions)
-* product focus
-* deploy models
-* project scoping -- independence
+Topics included in this case study include:
+* Classification modeling.
+* Programming Practice: Handing off models. 
+* Teamwork.
+* Web applications.
+* Website hosting with AWS
+* Deploying a DS application.
+* Data visualization.
+* Results presentation.
 
 #### Rough timeline 
 
-* Wednesday: Project scoping, Model building, and an intro to Web apps
-* Thursday: Web app and deployment
+* Day 1: Project scoping, Team direction, Model building
+* Day 2: Web app and deployment
 
 #### Deliverables
 
-* model (properly commented and encapsulated on Github with a README)
-* exposed API
-* Data visualization (extra)
+We will want two deliverables from you for this project:
 
-#### Assessment
-
-* You will be assessed both on quality and cleanliness of code
-* as well as a well functioning solution
+* A dashboard for investigators to use which helps them identify new events that are worthy of investigation for fraud.  This will pull in new data regularly, and update a useful display for the investigation team.  How you wish to lay this out is up to you.
+* A ten-minute presentation on your process and results. 
 
 #### Notes
 
-* [building your model](model_notes.md): notes on how to get started with the dataset and how to save your model once you've trained it.
+* [Overview](overview.md): gives a detailed overview of the project.  Included are *suggestions* for how you can organize your team, though this is not binding, and you are free to deviate.
+* [Building your model](model_notes.md): notes on how to get started with the dataset and how to save your model once you've trained it.
