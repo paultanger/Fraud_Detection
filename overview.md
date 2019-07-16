@@ -6,19 +6,19 @@ You are a contract data scientist/consultant hired by a new e-commerce site to t
 
 It is located in `data/data.zip`.
 
-***Do not share this data with anyone or copy any of it off the mac minis! Do not include the data file in your pull request!***
+***Do not share this data with anyone! Do not include the data file in your pull request!***
 
-You will be required to work on the project in the classroom.
+You will be required to work on the project on campus.
 
 
-### Deliverables (i.e. what you will be graded on)
+### Deliverables 
 * Scoping document (in Markdown)
 * Code on private fork of repo on Github
     * proper functions/encapsulation
     * well commented
     * Model description document (see below)
 * Flask app with well documented API
-    * Needs to register your service at POST `/register`
+    * Needs to query live data from our server (see step 6 below) 
     * Needs to accept input records on POST `/score` endpoint
 * Web based front-end to enable quick triage of potential fraud
     * Triage importance of transactions (low risk, medium risk, high risk)
@@ -26,27 +26,27 @@ You will be required to work on the project in the classroom.
 
 
 ### The "product" of fraud
-Something that you will (need to) think about throughout this sprint is how the product of your client fits into the given technical process.  A few points to note about the case of fraud:
+Something that you will need to think about throughout this case study is how the product of your client fits into the given technical process.  A few points to note about the case of fraud:
 
 * Failures are not created equal
     * False positives decrease customer/user trust
     * False negatives cost money
-        * Not all false negative cost the same amount of $$$
+        * Not all false negative cost the same amount of money
 * Accessibility
     * Other (non-technical) people may need to interact with the model/machinery
     * Manual review
 
-The fraud problem is actually semi-supervised in a way.  You do not use the model to declare a ground truth about fraud or not fraud, but simply to flag which transactions need further manual review.  We will essentially be building a triage model of what the most pressing (and costly) transaction we have seen.
+Your model will be used only the first step in the fraud identification process. You do not use the model to declare a ground truth about fraud or not fraud, but simply to flag which transactions need further manual review.  You will be building a triage model of what are the most pressing (and costly) transactions you have seen. It may also be useful to display what factors contribute to a given case being flagged as fraudulent by your model.  
 
 ## Day 1: Morning
 
 ### Step 1: EDA
-Before we start building the model, let's start with some EDA.
+Before you start building the model, start with some EDA.
 
 #### [Deliverable]: Look at the data
-Let's start by looking at the data.
+Start by looking at the data.
 
-1. Load the data in with pandas. Add a 'Fraud' column that contains True or False values depending on if the event is fraud. This is determined based on the `acct_type` field.
+1. Load the data with pandas. Add a 'Fraud' column that contains True or False values depending on if the event is fraud. If `acct_type` field contains the word `fraud`, label that point Fraud.
 
 2. Check how many fraud and not fraud events you have.
 
@@ -56,19 +56,19 @@ Let's start by looking at the data.
 
 
 #### [Deliverable]: Scoping the problem
-Before you get cranking on your model, let's think of how to approach the problem.
+Before you get cranking on your model, think of how to approach the problem.
 
-1. Think of what preprocessing you might want to do. How will you build your feature matrix? What different ideas do you have?
+1. What preprocessing might you want to do? How will you build your feature matrix? What different ideas do you have?
 
 2. What models do you want to try?
 
-3. What metric will you use to determine success?
+3. **What metric will you use to determine success?**
 
 
 ### Step 2: Building the Model
 
 #### [Deliverable]: Comparing models
-Now start building your potential models.
+Start building your potential models.
 
 **Notes for writing code:**
 * As you write your code, **always be committing** (ABC) to Github!
@@ -83,7 +83,7 @@ Now start building your potential models.
 
 3. Experiment with different models like SVM, Logistic Regression, Decision Trees, kNN, etc. You might end up with a final model that is a combination of multiple classification models.
 
-4. Compare their results. Make sure to do good comparison and don't just use accuracy!
+4. Compare their results. Pick a good metric; don't just use accuracy!
 
 ## Day 1: Afternoon
 
@@ -95,8 +95,8 @@ After all this experimentation, you should end up with a model you are happy wit
     * Feel free to use any library to get the job done.
     * Again, make sure your code is **clean**, **modular** and **well-commented**! The general rule of thumb: if you looked at your code in a couple months, would you be able to understand it?
 
-2. In your pull request, describe your project findings including:
-    * An overview of a chosen “optimal” modeling technique, with:
+2. In a file called `report.md`, describe your project findings including:
+    * An overview of a chosen "optimal" modeling technique, with:
         * process flow
         * preprocessing
         * accuracy metrics selected
@@ -107,11 +107,11 @@ After all this experimentation, you should end up with a model you are happy wit
 
 #### [Deliverable]: Pickled model
 
-1. Use `cPickle` to serialize your trained model and store it in a file. This is going to allow you to use the model without retraining it for every prediction, which would be ridiculous.
+1. Use `pickle` to serialize your trained model and store it in a file. This is going to allow you to use the model without retraining it for every prediction, which would be ridiculous.
 
 ### Step 3: Prediction script
 
-Take a few raw examples and store them in json or csv format in a file called `test_script_examples` or the like.
+Take a few raw examples and store them in json or csv format in a file called `test_script_examples`.
 
 
 #### [Deliverable]: Prediction script
@@ -127,7 +127,7 @@ Take a few raw examples and store them in json or csv format in a file called `t
 
 #### [Deliverable]: Prediction script backed by a database
 
-We want to store each prediction the model makes on new examples, which means we'll need a database.
+You'll want to store each prediction the model makes on new examples, which means you'll need a database.
 
 1. Set up a Postgres or MongoDB database that will store each example that the script runs on. You should create a database schema that reflects the form of the raw example data and add a column for the predicted probability of fraud.
 
@@ -135,49 +135,120 @@ We want to store each prediction the model makes on new examples, which means we
 
     Now, each time you run your script, one row should be added to the `predictions` table with a predicted probability of fraud.
 
+
 ## Day 2: Morning
 
 ### Step 5: Web App
 
 #### [Deliverable]: Hello World app
 
-1. A request in your browser to `/hello` should display "Hello, World!". Set up a Flask app with a route `GET /hello` to do so.
+1. A request in your browser to `/hello` should display "Hello, World!". Set up a Flask app with a route `GET /hello` to do so. Here's an example app skeleton:
 
-    Use this [tutorial](http://blog.luisrei.com/articles/flaskrest.html) to help.
+```python
+from flask import Flask, request
+app = Flask(__name__)
+
+@app.route('/', methods=['GET'])
+def home():
+    return ''' <p> nothing here, friend, but a link to 
+                   <a href="/hello">hello</a> and an 
+                   <a href="/form_example">example form</a> </p> '''
+
+@app.route('/hello', methods=['GET'])
+def hello_world():
+    return ''' <h1> Hello, World!</h1> '''
+
+@app.route('/form_example', methods=['GET'])
+def form_display():
+    return ''' <form action="/string_reverse" method="POST">
+                <input type="text" name="some_string" />
+                <input type="submit" />
+               </form>
+             '''
+
+@app.route('/string_reverse', methods=['POST'])
+def reverse_string():
+    text = str(request.form['some_string'])
+    reversed_string = text[-1::-1]
+    return ''' output: {}  '''.format(reversed_string)
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)
+```
+
+Use this [tutorial](http://blog.luisrei.com/articles/flaskrest.html) to for more.
 
 #### [Deliverable]: Fraud scoring service
 
 1. Set up a route `POST /score` and have it execute the logic in your prediction script. You should import the script as a module and call functions defined therein.
 
-    There are two things we'll do to make this all more efficient:
+    There are two things you'll do to make this all more efficient:
 
-    1. We only want to unpickle the model once
-    2. We only want to connect to the database once.
+    1. Only unpickle the model once
+    2. Only connect to the database once.
     
     Do both in a `if __name__ == '__main__':` block before you call `app.run()` and you can refer to these top-level global variables from within the function. This may require some re-architecting of your prediction module.
 
-    The individual example will no longer be coming from a local file, but instead will come in the body of the POST request as JSON. You can use `request.data` or `request.json` to access that data. You'll still need to vectorize it, predict, and store the example and prediction in the database.
-
-    You can test out this route by, in a separate script, sending a POST request to /score with a single example in JSON form using the `requests` Python package.
-
+    The individual example will no longer be coming from a local file, but instead you will get it by making a request to a server that will give you a data point as a string, which you can parse into JSON. 
+You can use `json.loads()` to parse a string to json, which is the reverse process of `json.dumps()`. You'll still need to vectorize it, predict, and store the example and prediction in the database.
 
 ### Step 6: Get "live" data
 
-We've set up a service for you that will ping your server with "live" data so that you can see that it's really working.
+We've set up a service for you that will send out "live" data so that you can see that your app is really working.
 
-To use this service, you will need to make a POST request to `ourcomputersip/register` with your IP and port. We'll announce what the ip address of the service machine is in class.
+To use this service, you will need to make a request to our secure server. It gives a maximum of the 10 most recent datapoints, ordered by `sequence_number`. New datapoints come in every few minutes.
 
-Here is the code to register your machine:
+*Warning: you will need to implement the save_to_database method.*
 
 ```python
-import requests
-reg_url = 'http://<to be filled in>/register:5000'
-requests.post(reg_url, data={'ip': my_ip, 'port': my_port})
+class EventAPIClient:
+    """Realtime Events API Client"""
+    
+    def __init__(self, first_sequence_number=0,
+                 api_url = 'https://hxobin8em5.execute-api.us-west-2.amazonaws.com/api/',
+                 api_key = 'vYm9mTUuspeyAWH1v-acfoTlck-tCxwTw9YfCynC',
+                 db = None):
+        """Initialize the API client."""
+        self.next_sequence_number = first_sequence_number
+        self.api_url = api_url
+        self.api_key = api_key
+        
+    def save_to_database(self, row):
+        """Save a data row to the database."""
+        print("Received data:\n" + repr(row) + "\n")  # replace this with your code
+
+    def get_data(self):
+        """Fetch data from the API."""
+        payload = {'api_key': self.api_key,
+                   'sequence_number': self.next_sequence_number}
+        response = requests.post(self.api_url, json=payload)
+        data = response.json()
+        self.next_sequence_number = data['_next_sequence_number']
+        return data['data']
+    
+    def collect(self, interval=30):
+        """Check for new data from the API periodically."""
+        while True:
+            print("Requesting data...")
+            data = self.get_data()
+            if data:
+                print("Saving...")
+                for row in data:
+                    self.save_to_database(row)
+            else:
+                print("No new data received.")
+            print(f"Waiting {interval} seconds...")
+            time.sleep(interval)
+
+
+# Usage Example
+
+client = EventAPIClient()
+client.collect()
 ```
 
-You can get your computer's IP with the `socket` module as can be seen [here](http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib). The port is your choice.
-
-1. Write a register function which makes the necessary post request. This function should be called once each time your Flask app is run, in the main block.
+1. Write a function that periodically fetches new data, generates a predicted fraud probability, and saves it to your database (after verifying that the data hasn't been seen before).
 
 **Make sure your app is adding the examples to the database with predicted fraud probabilities.**
 
@@ -187,25 +258,24 @@ You can get your computer's IP with the `socket` module as can be seen [here](ht
 
 #### [Deliverable]: Web front end to present results
 
-We want to present potentially fraudulent transactions with their probability scores from our model. The transactions should be segmented into 3 groups: low risk, medium risk, or high risk (based on the probabilities).
+You want to present potentially fraudulent transactions with their probability scores from your model. The transactions should be segmented into 3 groups: low risk, medium risk, or high risk (based on the probabilities).
 
-* Add route in Flask app for dashboard
-* Read data from postgres
+* Add route in Flask app for a dashboard
+* Read data from postgres/mongodb
 * Return HTML with the data
     * To generate the HTML from the json data from the database, either just use simple string concatenation or Jinja2 templates.
 
 
 ### Step 8: Deploy!
 
-Use [these instructions](https://github.com/zipfian/project-proposals/blob/master/host_app_on_amazon.md) as your guide if you need one.
+Use [these instructions](https://github.com/gschool/dsi-project-proposals/blob/master/host_app_on_amazon.md) as your guide if you need one.
 
-**The data stream is not available to you on AWS. Change your web app to display only the predictions of the test set. You can also change your app such that the results are not written to a database.**
 
 * Set up AWS instance
 * Set up environment on your EC2 instance
 * Push your code to github
 * SSH into the instance and clone your repo
-* Run Flask app on instance (make sure you update the register code with your updated ip and port)
+* Run Flask app on instance 
 * Make it work (debug, debug, debug)
 * Profits!
 
