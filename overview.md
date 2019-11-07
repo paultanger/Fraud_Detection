@@ -268,7 +268,7 @@ You want to present potentially fraudulent transactions with their probability s
 
 ### Step 8: Deploy!
 
-Use [these instructions](https://github.com/gschool/dsi-project-proposals/blob/master/host_app_on_amazon.md) as your guide if you need one.
+Use [these instructions](https://github.com/GalvanizeDataScience/project-proposals/blob/master/host_app_on_amazon.md) as your guide if you need one.
 
 
 * Set up AWS instance
