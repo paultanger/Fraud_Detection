@@ -6,23 +6,16 @@ Topics included in this case study include:
 * Classification modeling.
 * Programming Practice: Handing off models. 
 * Teamwork.
-* Web applications.
-* Website hosting with AWS
-* Deploying a DS application.
+* Creating a basic data tool that can support a front-end application.
 * Data visualization.
 * Results presentation.
-
-#### Rough timeline 
-
-* Day 1: Project scoping, Team direction, Model building
-* Day 2: Web app and deployment
 
 #### Deliverables
 
 We will want two deliverables from you for this project:
 
-* A dashboard for investigators to use which helps them identify new events that are worthy of investigation for fraud.  This will pull in new data regularly, and update a useful display for the investigation team.  How you wish to lay this out is up to you.
-* A ten-minute presentation on your process and results. 
+*  A script that pulls in new data points from a simulated data source as input, makes predictions on those datapoints, and saves the data points and their results into a database (local or cloud). 
+* A five-minute presentation on your process and results. 
 
 #### Notes
 

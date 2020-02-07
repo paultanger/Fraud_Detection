@@ -1,5 +1,5 @@
 ## Premise
-You are a contract data scientist/consultant hired by a new e-commerce site to try to weed out fraudsters.  The company unfortunately does not have much data science expertise... so you must properly scope and present your solution to the manager before you embark on your analysis.  Also, you will need to build a sustainable software project that you can hand off to the companies engineers by deploying your model in the cloud.  Since others will potentially use/extend your code you **NEED** to properly encapsulate your code and leave plenty of comments.
+You are a contract data scientist/consultant hired by a new e-commerce site to try to weed out fraudsters.  The company unfortunately does not have much data science expertise... so you must properly scope and present your solution to the manager before you embark on your analysis.  Also, you will need to build a the core of a software project that can be deployed by the company engineers using your best model to make predictions.  Since others will potentially use/extend your code you **NEED** to properly encapsulate your code and leave plenty of comments.
 
 ## The Data
 #### NOTE: This data is VERY sensitive!
@@ -14,15 +14,13 @@ You will be required to work on the project on campus.
 ### Deliverables 
 * Scoping document (in Markdown)
 * Code on private fork of repo on Github
-    * proper functions/encapsulation
-    * well commented
+    * Proper functions/encapsulation
+    * Well commented
     * Model description document (see below)
-* Flask app with well documented API
-    * Needs to query live data from our server (see step 6 below) 
-    * Needs to accept input records on POST `/score` endpoint
-* Web based front-end to enable quick triage of potential fraud
-    * Triage importance of transactions (low risk, medium risk, high risk)
-    * Extra: D3 based visualization of data/trend
+* Prediction and results saving script with usage instructions
+    * Needs to query "live" data from our data generator.
+    * Needs to query the database to produce a prediction record history.
+    * Optional: Produce three categories for your predictions: Low, Medium, and High Risk. How you categorize these is up to you.
 
 
 ### The "product" of fraud
@@ -36,9 +34,11 @@ Something that you will need to think about throughout this case study is how th
     * Other (non-technical) people may need to interact with the model/machinery
     * Manual review
 
-Your model will be used only the first step in the fraud identification process. You do not use the model to declare a ground truth about fraud or not fraud, but simply to flag which transactions need further manual review.  You will be building a triage model of what are the most pressing (and costly) transactions you have seen. It may also be useful to display what factors contribute to a given case being flagged as fraudulent by your model.  
+Your model will be used only as the first step in the fraud identification process. You do not use the model to declare a ground truth about fraud or not fraud, but simply to flag which transactions need further manual review.  You will be building a triage model of what are the most pressing (and costly) transactions you have seen. It may also be useful to display what factors contribute to a given case being flagged as fraudulent by your model.  
 
-## Day 1: Morning
+# Suggested Timeline
+
+## Morning
 
 ### Step 1: EDA
 Before you start building the model, start with some EDA.
@@ -85,7 +85,7 @@ Start building your potential models.
 
 4. Compare their results. Pick a good metric; don't just use accuracy!
 
-## Day 1: Afternoon
+## Afternoon
 
 #### [Deliverable]: Model description and code
 After all this experimentation, you should end up with a model you are happy with.
@@ -135,153 +135,14 @@ You'll want to store each prediction the model makes on new examples, which mean
 
     Now, each time you run your script, one row should be added to the `predictions` table with a predicted probability of fraud.
 
+## Step 5: Presentation
 
-## Day 2: Morning
+#### [Deliverable]: Presentation of your prediction system and how to use it
 
-### Step 5: Web App
+1. Describe your own understanding of the data and some key features or trends that provide insight or contain the most signal.
 
-#### [Deliverable]: Hello World app
+2. Explain what your model does to learn from the data and how it performs. Describe the metrics you've chosen to evaluate your possible models and how your final model performs on unseen test data.
 
-1. A request in your browser to `/hello` should display "Hello, World!". Set up a Flask app with a route `GET /hello` to do so. Here's an example app skeleton:
+3. Describe how you use the data access point as provided by the "engineers" and how you process and use the data. A demonstration of the collected data and database updates is preferred. 
 
-```python
-from flask import Flask, request
-app = Flask(__name__)
-
-@app.route('/', methods=['GET'])
-def home():
-    return ''' <p> nothing here, friend, but a link to 
-                   <a href="/hello">hello</a> and an 
-                   <a href="/form_example">example form</a> </p> '''
-
-@app.route('/hello', methods=['GET'])
-def hello_world():
-    return ''' <h1> Hello, World!</h1> '''
-
-@app.route('/form_example', methods=['GET'])
-def form_display():
-    return ''' <form action="/string_reverse" method="POST">
-                <input type="text" name="some_string" />
-                <input type="submit" />
-               </form>
-             '''
-
-@app.route('/string_reverse', methods=['POST'])
-def reverse_string():
-    text = str(request.form['some_string'])
-    reversed_string = text[-1::-1]
-    return ''' output: {}  '''.format(reversed_string)
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
-```
-
-Use this [tutorial](http://blog.luisrei.com/articles/flaskrest.html) to for more.
-
-#### [Deliverable]: Fraud scoring service
-
-1. Set up a route `POST /score` and have it execute the logic in your prediction script. You should import the script as a module and call functions defined therein.
-
-    There are two things you'll do to make this all more efficient:
-
-    1. Only unpickle the model once
-    2. Only connect to the database once.
-    
-    Do both in a `if __name__ == '__main__':` block before you call `app.run()` and you can refer to these top-level global variables from within the function. This may require some re-architecting of your prediction module.
-
-    The individual example will no longer be coming from a local file, but instead you will get it by making a request to a server that will give you a data point as a string, which you can parse into JSON. 
-You can use `json.loads()` to parse a string to json, which is the reverse process of `json.dumps()`. You'll still need to vectorize it, predict, and store the example and prediction in the database.
-
-### Step 6: Get "live" data
-
-We've set up a service for you that will send out "live" data so that you can see that your app is really working.
-
-To use this service, you will need to make a request to our secure server. It gives a maximum of the 10 most recent datapoints, ordered by `sequence_number`. New datapoints come in every few minutes.
-
-*Warning: you will need to implement the save_to_database method.*
-
-```python
-class EventAPIClient:
-    """Realtime Events API Client"""
-    
-    def __init__(self, first_sequence_number=0,
-                 api_url = 'https://hxobin8em5.execute-api.us-west-2.amazonaws.com/api/',
-                 api_key = 'vYm9mTUuspeyAWH1v-acfoTlck-tCxwTw9YfCynC',
-                 db = None):
-        """Initialize the API client."""
-        self.next_sequence_number = first_sequence_number
-        self.api_url = api_url
-        self.api_key = api_key
-        
-    def save_to_database(self, row):
-        """Save a data row to the database."""
-        print("Received data:\n" + repr(row) + "\n")  # replace this with your code
-
-    def get_data(self):
-        """Fetch data from the API."""
-        payload = {'api_key': self.api_key,
-                   'sequence_number': self.next_sequence_number}
-        response = requests.post(self.api_url, json=payload)
-        data = response.json()
-        self.next_sequence_number = data['_next_sequence_number']
-        return data['data']
-    
-    def collect(self, interval=30):
-        """Check for new data from the API periodically."""
-        while True:
-            print("Requesting data...")
-            data = self.get_data()
-            if data:
-                print("Saving...")
-                for row in data:
-                    self.save_to_database(row)
-            else:
-                print("No new data received.")
-            print(f"Waiting {interval} seconds...")
-            time.sleep(interval)
-
-
-# Usage Example
-
-client = EventAPIClient()
-client.collect()
-```
-
-1. Write a function that periodically fetches new data, generates a predicted fraud probability, and saves it to your database (after verifying that the data hasn't been seen before).
-
-**Make sure your app is adding the examples to the database with predicted fraud probabilities.**
-
-## Day 2: Afternoon
-
-### Step 7: Dashboard
-
-#### [Deliverable]: Web front end to present results
-
-You want to present potentially fraudulent transactions with their probability scores from your model. The transactions should be segmented into 3 groups: low risk, medium risk, or high risk (based on the probabilities).
-
-* Add route in Flask app for a dashboard
-* Read data from postgres/mongodb
-* Return HTML with the data
-    * To generate the HTML from the json data from the database, either just use simple string concatenation or Jinja2 templates.
-
-
-### Step 8: Deploy!
-
-Use [these instructions](https://github.com/GalvanizeDataScience/project-proposals/blob/master/host_app_on_amazon.md) as your guide if you need one.
-
-
-* Set up AWS instance
-* Set up environment on your EC2 instance
-* Push your code to github
-* SSH into the instance and clone your repo
-* Run Flask app on instance 
-* Make it work (debug, debug, debug)
-* Profits!
-
-
-### Extra
-
-* Make your dashboard interactive. Allow a dashboard user to clear or flag fraud events. Come up with other features that might be useful.
-
-* Create a D3 visualization for your web based frontend.  You might want to visualize any number of metrics/data.  Use your creativity to create something that makes sense for a end user in terms of what data you present.
+    Also describe how your engineering team could use the code you've built and the model you've pickled to make predictions and access your database.
