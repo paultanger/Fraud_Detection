@@ -4,7 +4,7 @@ You are a contract data scientist/consultant hired by a new e-commerce site to t
 ## The Data
 #### NOTE: This data is VERY sensitive!
 
-It is located in `data/data.zip`.
+It is located in `data/data.zip`. The live data simulator is also included in `data/fraud_test_event_generator/`. Inside that folder is a basic description of how run the simulator and how to request new data points.
 
 ***Do not share this data with anyone! Do not include the data file in your pull request!***
 

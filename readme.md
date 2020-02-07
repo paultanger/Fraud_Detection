@@ -4,7 +4,7 @@ Topics included in this case study include:
 * Classification modeling.
 * Programming Practice: Handing off models. 
 * Teamwork.
-* Creating a basic data tool that can support a front-end application.
+* Creating a script to support a front-end fraud detection application.
 * Data visualization.
 * Results presentation.
 
