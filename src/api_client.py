@@ -5,10 +5,10 @@ import pymongo
 import pandas as pd
 import psycopg2 as pg2
 from sqlalchemy import create_engine
-​
+
 class EventAPIClient:
     """Realtime Events API Client"""
-​
+
     def __init__(self, first_sequence_number=0,
                  api_url='https://hxobin8em5.execute-api.us-west-2.amazonaws.com/api/',
                  api_key='vYm9mTUuspeyAWH1v-acfoTlck-tCxwTw9YfCynC',
@@ -61,7 +61,7 @@ class EventAPIClient:
                 'venue_state',
                 'sequence_number']
         self.df = pd.DataFrame(columns = self.cols)
-​
+
     def save_to_database(self, row):
         """Save a data row to the database."""
         #print("Received data:\n" + repr(row) + "\n")  # replace this with your code
@@ -81,10 +81,10 @@ class EventAPIClient:
         # with create_engine('postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data') as engine:
         #     # with engine.connect() as conn:
         #     pd.json_normalize(row).to_sql('api_data', engine, if_exists='replace',index=False)
-​
+
     def get_df(self):
         return self.df
-​
+
     def get_data(self):
         """Fetch data from the API."""
         payload = {'api_key': self.api_key,
@@ -93,7 +93,7 @@ class EventAPIClient:
         data = response.json()
         self.next_sequence_number = data['_next_sequence_number']
         return data['data']
-​
+
     def collect(self, interval=30):
         """Check for new data from the API periodically."""
         while True:
@@ -107,13 +107,13 @@ class EventAPIClient:
                 print("No new data received.")
             print(f"Waiting {interval} seconds...")
             time.sleep(interval)
-​
-​
+
+
 def main():
     """Collect events every 30 seconds."""
     client = EventAPIClient()
     client.collect()
-​
+
 if __name__ == "__main__":
     # main()
     # do it manually to access df
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     # print(df)
     # or just get most recent 10
     # client = EventAPIClient()
-​
+
     recent10 = client.get_data()
     row = pd.json_normalize(recent10)
     #### PSYCO #######
@@ -142,9 +142,9 @@ if __name__ == "__main__":
     #             curs.close()
     # finally:
     #     conn.close()
-​
+
     ##################
-​
+
     # engine = create_engine('postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data')
     # conn = engine.connect()
     # # conn.execute('CREATE SCHEMA fraud')
@@ -168,15 +168,15 @@ if __name__ == "__main__":
     # record = pd.json_normalize(recent10) 
     # print(record)
     # collect will keep writing them to db once we implement that
-​
+
     # then we need to call our prediction function on the data in the db
     # and update the fraud col?
     # or maybe we need two tables.. one for API data and one to store updated
     # in the notes below, it says it will come as a string, but seems like
     # it comes as a dict?
-​
+
     # should we modify class to include connection to our db?
-​
+
     ### IMPORTANT !!!! (after verifying that the data hasn't been seen before).
     '''
     The individual example will no longer be coming from a local file, 
@@ -185,3 +185,5 @@ if __name__ == "__main__":
     json.loads() to parse a string to json, which is the reverse process of json.dumps(). 
     You'll still need to vectorize it, predict, and store the example and prediction 
     in the database.
+    '''
+
