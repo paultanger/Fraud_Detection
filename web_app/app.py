@@ -55,32 +55,37 @@ if __name__ == '__main__':
 """
 M notes:
 #----   after cursor add following code to take in new data and put into PD
-
 #----   take input from SQL and place into Pandas DF
 sql_query = pd.read_sql_query('SELECT * FROM **NAME**, conn)
-print(sql_query)
 
 #----   will need to run sql_query through cleaning function
-**add code here
+from predict import all_together
+
+cleaned_x = all_together(sql_query)
 
 #----   will need to run code above through pickle model
-loaded_model = pickle.load(open('****', 'rb'))
-proba = loaded_model.predict_proba(X) #list of proba
-print(proba)
+loaded_model = pickle.load(open('../data/pickle_model.pkl', 'rb'))
+proba = loaded_model.predict_proba(cleaned_x) #array of proba
+proba = list(proba[:,1])
+cleaned_x['prediction'] = proba
 
 #----   get pred.proba and categorize into HIGH, MED, LOW by adding column *WHERE does this info go?
-if proba == 1 and proba < 0.97:
-    high
-elif proba > 0.97 and proba < 0.95:
-    med
-elif proba > 0.91 and proba < 0.95:
-    low
-else:
-    not fraud
+def flag_label(row):
+    if row['predict'] == 1 and row['predict'] > 0.97:
+        return 'HIGH'
+    elif row['predict'] > 0.95:
+        return 'MEDIUM'
+    elif row['predict'] > 0.91:
+        return 'LOW'
+    else:
+        return 'Not Fraud'
 
+cleaned_x['flag'] = cleaned_x.apply(lambda row: flag_label(row), axis = 1)
+display = cleaned_x.iloc[:,[16, 32]].copy() #DOUBLE CHECK
 
 #----   render above dataframe as html and select 
-fraud_html = fraud_check.to_html()
+#----   show top features and fraud label and specific identification label 
+fraud_html = display.to_html()
 
 #----   write html to flask app
 text_file = open("fraud_check.html", "w")
