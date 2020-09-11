@@ -1,21 +1,14 @@
-{% extends "base.html" %}
-    {% block content %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Column name 1</th>
-                <th scope="col">Column name 2</th>
-                <th scope="col">Column name 3</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for row in data %}
-            <tr>
-                <td>{{row['Column name 1']}}</td>
-                <td>{{row['Column name 2']}}</td>
-                <td>{{row['Column name 2']}}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+{% endfor %}
+</body>
+</html>
