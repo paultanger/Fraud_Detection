@@ -105,18 +105,18 @@ if __name__ == "__main__":
     # main()
     # do it manually to access df
     client = EventAPIClient()
-    client.collect()
-    df = client.get_df()
-    print(df)
+    #client.collect()
+    #df = client.get_df()
+    #print(df)
     # or just get most recent 10
     # client = EventAPIClient()
-    # recent10 = client.get_data()
+    recent10 = client.get_data()
     # this is a list of json records?
     # print(type(recent10))
     # print(len(recent10))
-    #print(recent10)
+    print(recent10)
     # we can convert to df:
-    # record = pd.json_normalize(recent10) 
+    record = pd.json_normalize(recent10) 
     # print(record)
     # collect will keep writing them to db once we implement that
 
