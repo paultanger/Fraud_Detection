@@ -12,11 +12,15 @@ def col_names(x):
 
 
 #created df of those column names
-def numerical_df(x,col_list):
+def numarical_df(x,col_list):
     return x[col_list].drop('payee_name',axis=1)   
 
-## replace nans with mean
-def replace_nans(x):
+## replace nans with mea
+
+def fill_mean(x,col):
+    x[col] = x[col].fillna(x[col].mean())
+def fill_zero(x,col):
+    x[col] = x[col].fillna(0)
 
 
 
@@ -31,18 +35,31 @@ def ticket_types(row):
     return {'cost': average_cost , 'quantity':tot_q, 'num_sold': sold, 'percent_sold':perc_sold}
 
 def make_ticket_df(x):
-    return x.apply(ticket_types, axis=1, result_type='expand')   
+    df = x.apply(ticket_types, axis=1, result_type='expand')  
+    df.fillna(0, inplace = True) 
+    df = df.replace(np.inf, 110)
+    return df
+    
 
 ### concat num value df and ticket df
-def concat_both(x_numarical,x2)
-#data = pd.concat([data,new_cols],axis=1)
+def concat_both(x_numarical,x2):
+    fill_mean(x_numarical,'delivery_method')
+    fill_mean(x_numarical,'event_published')
+    fill_mean(x_numarical,'has_header')
+    fill_mean(x_numarical,'org_facebook')
+    fill_mean(x_numarical,'org_twitter')
+    fill_mean(x_numarical,'sale_duration')
+    fill_zero(x_numarical,'venue_latitude')
+    fill_zero(x_numarical,'venue_longitude')
+    return pd.concat(x_numarical,x2,axis=1)
 
-
+def all_together(sample):
+    col_name = col_names(sample)
+    num_df = numarical_df(sample,col_name)
+    ticket_df = make_ticket_df(sample)
+    return concat_both(num_df,ticket_df)
 
 if __name__=='__main__':
     
     sample = pd.read_csv('../data/test_script_examples.csv',nrows=1)
-    col_name = col_names(sample)
-    df = numerical_df(sample,col_name)
-
-
+    cleaned_sample = all_together(sample)
