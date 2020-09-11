@@ -9,7 +9,7 @@ import pandas as pd
 
 app = Flask(__name__, template_folder = 'templates/')
 
-x = pd.read_csv('data/sample_df.csv')
+x = pd.read_csv('data/display.csv')
 
 @app.route('/', methods=['GET'])
 def home():
@@ -77,6 +77,16 @@ cleaned_x['flag'] = cleaned_x.apply(lambda row: flag_label(row), axis = 1)
 display = cleaned_x.iloc[:,[16, 32]].copy() #DOUBLE CHECK
 
 #----   render above dataframe as html and select 
+#----   show top features and fraud label and specific identification label 
+fraud_html = display.to_html()
+#----   show top features and fraud label and specific identification label 
+fraud_html = display.to_html()
+#----   show top features and fraud label and specific identification label 
+fraud_html = display.to_html()
+#----   show top features and fraud label and specific identification label 
+fraud_html = display.to_html()
+#----   show top features and fraud label and specific identification label 
+fraud_html = display.to_html()
 #----   show top features and fraud label and specific identification label 
 fraud_html = display.to_html()
 #----   show top features and fraud label and specific identification label 
