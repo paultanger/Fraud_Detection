@@ -9,6 +9,8 @@ import pandas as pd
 
 app = Flask(__name__, template_folder = 'templates/')
 
+x = pd.read_csv('data/sample_df.csv')
+
 @app.route('/', methods=['GET'])
 def home():
     return ''' <p> nothing here, friend, but a link to 
@@ -34,18 +36,9 @@ def reverse_string():
     return ''' output: {}  '''.format(reversed_string)
 
 #---    getting a pandas df to display on a web app
-@app.route('/analysis', methods=['GET'])
+@app.route('/analysis') 
 def analysis():
-    x = pd.DataFrame(np.random.randn(20,5))
-    return render_template("analysis.html", data = x.to_dict())
-    # return ''' <h1> Hello, World!</h1> '''
-
-
-#---    second attempt/way of getting pandas df to display on web app
-@app.route('/tables', methods=['GET'])
-def show_tables():
-    data = pd.read_json('../data/data.json')
-    return render_template('analysis.html', data = data.to_html())
+    return render_template("analysis.html", tables=[x.to_html(classes='data')], titles=x.columns.values)
 
 
 if __name__ == '__main__':
@@ -84,6 +77,8 @@ cleaned_x['flag'] = cleaned_x.apply(lambda row: flag_label(row), axis = 1)
 display = cleaned_x.iloc[:,[16, 32]].copy() #DOUBLE CHECK
 
 #----   render above dataframe as html and select 
+#----   show top features and fraud label and specific identification label 
+fraud_html = display.to_html()
 #----   show top features and fraud label and specific identification label 
 fraud_html = display.to_html()
 
