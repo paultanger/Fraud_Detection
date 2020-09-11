@@ -13,7 +13,7 @@ def col_names(x):
 
 #created df of those column names
 def numarical_df(x,col_list):
-    return x[col_list].drop('payee_name',axis=1)   
+    return x[col_list]    #.drop('payee_name',axis=1)   
 
 ## replace nans with mea
 
@@ -28,6 +28,8 @@ def fill_zero(x,col):
 def ticket_types(row):
     ''' makes columns from the 'ticket_types' dictionary column'''
     row=row['ticket_types']
+    #row = list(row)
+    #breakpoint()
     average_cost = np.mean([r['cost'] for r in row])
     sold = np.sum(r['quantity_sold'] for r in row)
     tot_q = np.sum([r['quantity_total'] for r in row])
@@ -39,7 +41,8 @@ def make_ticket_df(x):
     df.fillna(0, inplace = True) 
     df = df.replace(np.inf, 110)
     return df
-    
+
+
 
 ### concat num value df and ticket df
 def concat_both(x_numarical,x2):
@@ -51,7 +54,7 @@ def concat_both(x_numarical,x2):
     fill_mean(x_numarical,'sale_duration')
     fill_zero(x_numarical,'venue_latitude')
     fill_zero(x_numarical,'venue_longitude')
-    return pd.concat(x_numarical,x2,axis=1)
+    return pd.concat((x_numarical,x2),axis=1)
 
 def all_together(sample):
     col_name = col_names(sample)
@@ -61,5 +64,8 @@ def all_together(sample):
 
 if __name__=='__main__':
     
-    sample = pd.read_csv('../data/test_script_examples.csv',nrows=1)
+    sample = pd.read_json('../data/data.json')
+
     cleaned_sample = all_together(sample)
+    
+    
