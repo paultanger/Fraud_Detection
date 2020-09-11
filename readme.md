@@ -43,7 +43,7 @@ f1 score: harmonic mean of recal and precision. We chose this becasue the classe
 
 <!--We split the data frame into train and test sets with with stratification to make sure we have the same ratio of fraud cases in train and test. We  fit our model with the train set, then use the test set to get a score for the model.-->
 ## Validation and Testing Methodology
-We split our dataset into train and test set stratifying to make sure we have the same ratio of fraud to to not fraud in both sets. We also oversampled the training dataset so there was a higher ratio of fraud in the traing so that the model would not just guess all in the majority class. We  
+We split our dataset into train and test set stratifying to make sure we have the same ratio of fraud to to not fraud in both sets. We also oversampled the training dataset so there was a higher ratio of fraud in the traing so that the model would not just guess all in the majority class. We tried useing SMOTE technique instead of oversampleing but decided to stick woth oversampleing. 
 
 We found a random forest classifier model to be the best performing model. It got an f1 score **99.7** on test data.
 
