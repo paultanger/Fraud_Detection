@@ -5,6 +5,8 @@ import pymongo
 import pandas as pd
 import psycopg2 as pg2
 from sqlalchemy import create_engine
+import predict
+import pickle
 
 class EventAPIClient:
     """Realtime Events API Client"""
@@ -20,47 +22,8 @@ class EventAPIClient:
         self.api_key = api_key
         self.db = db
         self.interval = 30
-        # paul added
-        self.cols = ['body_length',
-                'channels',
-                'country',
-                'currency',
-                'delivery_method',
-                'description',
-                'email_domain',
-                'event_created',
-                'event_end',
-                'event_published',
-                'event_start',
-                'fb_published',
-                'has_analytics',
-                'has_header',
-                'has_logo',
-                'listed',
-                'name',
-                'name_length',
-                'object_id',
-                'org_desc',
-                'org_facebook',
-                'org_name',
-                'org_twitter',
-                'payee_name',
-                'payout_type',
-                'previous_payouts',
-                'sale_duration',
-                'show_map',
-                'ticket_types',
-                'user_age',
-                'user_created',
-                'user_type',
-                'venue_address',
-                'venue_country',
-                'venue_latitude',
-                'venue_longitude',
-                'venue_name',
-                'venue_state',
-                'sequence_number']
-        self.df = pd.DataFrame(columns = self.cols)
+        self.model = pickle.load(open('../data/pickle_model.pkl', 'rb'))
+        
 
     def save_to_database(self, row):
         """Save a data row to the database."""
@@ -68,22 +31,47 @@ class EventAPIClient:
         # print(pd.json_normalize(row))
         # self.df = self.df.append(pd.json_normalize(row))
         # self.df.to_csv('../data/api_data.csv', index=False)
+        # row = pd.json_normalize(row)
+        ######### CLEAN UP BEFORE SAVING ##########
+        row = predict.all_together(row)
+        # print(row)
+        # if not row['quantity_sold']:
+        #     print('this will break')
+        ###### PREDICT ##################
+        row = self.make_predictions(row)
+        # SEND TO DB
         self.connect_db_add_row(row)
         print('row saved to db')
     
+    def flag_label(self, row):
+            if row['predict'] == 1 and row['predict'] > 0.97:
+                return 'HIGH'
+            elif row['predict'] > 0.95:
+                return 'MEDIUM'
+            elif row['predict'] > 0.91:
+                return 'LOW'
+            else:
+                return 'Not Fraud'
+
+    def make_predictions(self, row):
+        proba = self.model.predict_proba(row) #array of proba
+        proba = list(proba[:,1])
+        row['prediction'] = proba
+        #----   get pred.proba and categorize into HIGH, MED, LOW by adding column *WHERE does this info go?
+        row['flag'] = row.apply(lambda row: self.flag_label(row), axis = 1)
+        return row
+
     def connect_db_add_row(self, row):
         engine = create_engine('postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data')
         conn = engine.connect()
         # conn.execute('CREATE SCHEMA fraud')
         # can't store nested dicts
-        row = row[['body_length', 'channels']]
-        row.to_sql('api_data', conn, if_exists='append', index=False)  # if_exists='append',index=False, 
+        # row = row[['body_length', 'channels']]
+        # print(row)
+        row.to_sql('api_data', conn, if_exists='append', index=False)  # if_exists='replace',index=False, 
         # with create_engine('postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data') as engine:
-        #     # with engine.connect() as conn:
-        #     pd.json_normalize(row).to_sql('api_data', engine, if_exists='replace',index=False)
-
-    def get_df(self):
-        return self.df
+        #     conn = engine.connect()
+        #     row.to_sql('api_data', conn, if_exists='append',index=False)
 
     def get_data(self):
         """Fetch data from the API."""
@@ -118,14 +106,18 @@ if __name__ == "__main__":
     # main()
     # do it manually to access df
     client = EventAPIClient()
-    # client.collect()
+    client.collect()
+
+    
     # df = client.get_df()
     # print(df)
     # or just get most recent 10
     # client = EventAPIClient()
 
-    recent10 = client.get_data()
-    row = pd.json_normalize(recent10)
+    # recent10 = client.get_data()
+    # result = predict.all_together(recent10)
+
+    # row = pd.json_normalize(recent10)
     #### PSYCO #######
     # conn = pg2.connect(database="fraud_data", user="postgres", password='galvanize', host="52.15.236.214", port="5432")
     # curs = conn.cursor()
