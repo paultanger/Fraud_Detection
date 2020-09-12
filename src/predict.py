@@ -32,6 +32,9 @@ def ticket_types(row):
         row[0]['quantity_sold'] = 0
     #row = list(row)
     #breakpoint()
+    # average_cost = np.mean([r['cost'] for r in row])
+    # sold = np.sum([r['quantity_sold'] for r in row])
+    # tot_q = np.sum([r['quantity_total'] for r in row])
     average_cost = np.mean([r['cost'] for r in row])
     sold = np.sum([r['quantity_sold'] for r in row])
     tot_q = np.sum([r['quantity_total'] for r in row])
@@ -41,26 +44,29 @@ def ticket_types(row):
 def make_ticket_df(x):
     #df = x.apply(lambda i: ticket_types(i) if i.index == 0 else i, axis=1, result_type='expand')
     df = x.apply(ticket_types, axis=1, result_type='expand')  
+    # print(df.shape())
     df.fillna(0, inplace = True) 
     df = df.replace(np.inf, 110)
     return df
 
-
-
 ### concat num value df and ticket df
 def concat_both(x_numarical,x2):
-    fill_mean(x_numarical,'delivery_method')
-    fill_mean(x_numarical,'event_published')
     #breakpoint()
+    if 'delivery_method' not in x_numarical.columns:
+        x_numarical['delivery_method'] = 0
     if 'has_header' not in x_numarical.columns:
         x_numarical['has_header'] = 0
+    fill_mean(x_numarical,'delivery_method')
+    fill_mean(x_numarical,'event_published')
     fill_mean(x_numarical,'has_header')
     fill_mean(x_numarical,'org_facebook')
     fill_mean(x_numarical,'org_twitter')
     fill_mean(x_numarical,'sale_duration')
     fill_zero(x_numarical,'venue_latitude')
     fill_zero(x_numarical,'venue_longitude')
-    return pd.concat((x_numarical,x2),axis=1)
+    test = pd.concat((x_numarical,x2),axis=1)
+    print(test.shape)
+    return test
 
 def all_together(sample):
     sample = pd.json_normalize(sample) 
