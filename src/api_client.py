@@ -27,20 +27,29 @@ class EventAPIClient:
 
     def save_to_database(self, row):
         """Save a data row to the database."""
-        #print("Received data:\n" + repr(row) + "\n")  # replace this with your code
+        #print("Received data:\n" + repr(row) + "\n") 
         # print(pd.json_normalize(row))
         # self.df = self.df.append(pd.json_normalize(row))
         # self.df.to_csv('../data/api_data.csv', index=False)
-        # row = pd.json_normalize(row)
+
+        # convert to df
+        self.row_df = pd.json_normalize(row)
+        # drop ticket types and payout jsons
+        self.row_df.drop(['ticket_types', 'previous_payouts'], axis=1, inplace=True)
+        # unpack nested json of ticket types and prev payouts
+        self.tix_types = pd.json_normalize(data=row, record_path='ticket_types', meta=['object_id']) 
+        self.prev_pay_types = pd.json_normalize(data=row, record_path='previous_payouts', meta=['object_id']) 
+
         ######### CLEAN UP BEFORE SAVING ##########
-        row = predict.all_together(row)
+        # row = predict.all_together(row)
         # print(row)
         # if not row['quantity_sold']:
         #     print('this will break')
-        ###### PREDICT ##################
-        row = self.make_predictions(row)
-        # SEND TO DB
-        self.connect_db_add_row(row)
+        ######### PREDICT ##########
+        # row = self.make_predictions(row)
+
+        ########## SEND TO DB ##########
+        self.connect_db_add_row()
         print('row saved to db')
     
     def flag_label(self, row):
@@ -61,17 +70,18 @@ class EventAPIClient:
         row['flag'] = row.apply(lambda row: self.flag_label(row), axis = 1)
         return row
 
-    def connect_db_add_row(self, row):
+    def connect_db_add_row(self):
+        # engine = create_engine('postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data')
+        # conn = engine.connect()
+        # # conn.execute('CREATE SCHEMA fraud')
+        # self.row_df.to_sql('api_data', conn, if_exists='append', index=False)
+        # self.tix_types.to_sql('ticket_types', conn, if_exists='append', index=False)
+        # self.prev_pay_types.to_sql('previous_payouts', conn, if_exists='append', index=False)
         engine = create_engine('postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data')
-        conn = engine.connect()
-        # conn.execute('CREATE SCHEMA fraud')
-        # can't store nested dicts
-        # row = row[['body_length', 'channels']]
-        # print(row)
-        row.to_sql('api_data', conn, if_exists='append', index=False)  # if_exists='replace',index=False, 
-        # with create_engine('postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data') as engine:
-        #     conn = engine.connect()
-        #     row.to_sql('api_data', conn, if_exists='append',index=False)
+        with engine.connect() as conn:
+            self.row_df.to_sql('api_data', conn, if_exists='append', index=False)
+            self.tix_types.to_sql('ticket_types', conn, if_exists='append', index=False)
+            self.prev_pay_types.to_sql('previous_payouts', conn, if_exists='append', index=False)
 
     def get_data(self):
         """Fetch data from the API."""
@@ -108,7 +118,6 @@ if __name__ == "__main__":
     client = EventAPIClient()
     client.collect()
 
-    
     # df = client.get_df()
     # print(df)
     # or just get most recent 10
@@ -118,6 +127,19 @@ if __name__ == "__main__":
     # result = predict.all_together(recent10)
 
     # row = pd.json_normalize(recent10)
+    # row.drop(['ticket_types', 'payout_type', 'previous_payouts'], axis=1, inplace=True)
+    # row.drop(['ticket_types', 'previous_payouts'], axis=1, inplace=True)
+
+
+    # https://www.kaggle.com/jboysen/quick-tutorial-flatten-nested-json-in-pandas
+    # ticket_types = pd.json_normalize(row['ticket_types'][0]) 
+    # record path is name of cols that contain nested json (can pass list of cols if more than one)
+    # meta is cols you want to grab and keep with the unpacked df
+    # so now we can either store this in a sep table or do the calcs here
+    # tix_types = pd.json_normalize(data=recent10, record_path='ticket_types', meta=['object_id']) 
+    # pay_types = pd.json_normalize(data=recent10, record_path='payout_type', meta=['object_id']) 
+    # prev_pay_types = pd.json_normalize(data=recent10, record_path='previous_payouts', meta=['object_id']) 
+
     #### PSYCO #######
     # conn = pg2.connect(database="fraud_data", user="postgres", password='galvanize', host="52.15.236.214", port="5432")
     # curs = conn.cursor()
