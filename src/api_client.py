@@ -4,6 +4,7 @@ import requests
 import pymongo
 import pandas as pd
 from sqlalchemy import create_engine
+from getpass import getpass
 
 class EventAPIClient:
     """Realtime Events API Client"""
@@ -34,14 +35,20 @@ class EventAPIClient:
 
         # send to db
         self.connect_db_add_row()
-        print('row saved to db')
     
 
     def connect_db_add_row(self):
-        with self.engine.connect() as conn:
-            self.row_df.to_sql('api_data', conn, if_exists='append', index=False)
-            self.tix_types.to_sql('ticket_types', conn, if_exists='append', index=False)
-            self.prev_pay_types.to_sql('previous_payouts', conn, if_exists='append', index=False)
+        # check if object id exists, if does, don't add
+        query = f'SELECT 1 FROM api_data WHERE object_id = {self.row_df["object_id"][0]};'
+        exists = self.engine.execute(query)
+        if not exists.rowcount:
+            with self.engine.connect() as conn:
+                    self.row_df.to_sql('api_data', conn, if_exists='append', index=False)
+                    self.tix_types.to_sql('ticket_types', conn, if_exists='append', index=False)
+                    self.prev_pay_types.to_sql('previous_payouts', conn, if_exists='append', index=False)
+            print('row saved to db')
+        else:
+            print('row exists')
 
 
     def get_data(self):
@@ -76,6 +83,19 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    db_details = 'postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data'
+    db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
     client = EventAPIClient(db=db_details)
     client.collect()
+    
+    # test check if exists
+    # row = client.get_data()
+    # row_df = pd.json_normalize(row)
+    # engine = create_engine(db_details)
+    # query = f'SELECT 1 FROM api_data WHERE object_id = {row_df["object_id"][0]};'
+    # query = f'SELECT 1 FROM api_data WHERE object_id = 0;'
+    # print(query)
+    # result = engine.execute(query)
+    # if not result.rowcount:
+    #     print('success')
+    # for r in result:
+    #     print(r)
