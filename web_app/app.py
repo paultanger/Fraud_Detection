@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 from getpass import getpass
-from src.api_client import EventAPIClient
+# from src.api_client import EventAPIClient
 # #---     use pickle to load in the pre-trained model; loaded at the top of the app, loaded into memory ONCE on the server rather than loaded every time
 # with open(f'','rb') as f:
 #     model = pickle.load(f)
