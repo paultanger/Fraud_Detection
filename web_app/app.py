@@ -111,9 +111,9 @@ if __name__ == '__main__':
     # db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
     # run_api(db_details)
     # run app
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    # app.run(host='0.0.0.0', port=8080, debug=True)
     # for AWS
-    # app.run(host='0.0.0.0', port=33507, debug=False)
+    app.run(host='0.0.0.0', port=33507, debug=False)
 
 
 """
