@@ -8,19 +8,13 @@ from getpass import getpass
 # with open(f'','rb') as f:
 #     model = pickle.load(f)
 
-app = Flask(__name__, template_folder = 'templates/')
+app = Flask(__name__, root_path='./') # template_folder = 'templates/')
 
-x = pd.read_csv('data/display.csv')
+x = pd.read_csv('../data/display.csv')
 
 @app.route('/', methods=['GET'])
 def home():
-    return ''' <p> nothing here, friend, but a link to 
-                   <a href="/hello">hello</a> and an 
-                   <a href="/form_example">example form</a> </p> '''
-
-@app.route('/hello', methods=['GET'])
-def hello_world():
-    return ''' <h1> Hello, World!</h1> '''
+    return render_template("index.html")
 
 @app.route('/form_example', methods=['GET'])
 def form_display():
@@ -40,6 +34,18 @@ def reverse_string():
 @app.route('/analysis') 
 def analysis():
     return render_template("analysis.html", tables=[x.to_html(classes='data')], titles=x.columns.values)
+
+# display most recent 10 from api
+@app.route('/recent10') 
+def recent10():
+    return render_template("recent10.html", tables=[x.to_html(classes='data')], titles=x.columns.values)
+
+
+# custom 404
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
 
 def run_api(db_details):
     client = EventAPIClient(db=db_details)

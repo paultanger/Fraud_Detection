@@ -101,5 +101,5 @@ Bring together all the components into a working, interactive flask app.
     - `ticket_types`
     - `previous_payouts`
 
-* `api_data` actually has some columns that aren't in the API data and could be updated later: `acct_type` and `approx_payout_date`.  Also of note, the api data has a `sequence_number` that the original data doesn't have.
+* `api_data` actually has some columns that aren't in the API data and could be updated later: `acct_type` and `approx_payout_date`.  In addition, the api doesn't send data for these cols: `gts`, `num_order`, `num_payout`. Also of note, the api data has a `sequence_number` that the original data doesn't have.
 
