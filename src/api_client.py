@@ -1,7 +1,7 @@
 """Realtime Events API Client for DSI Fraud Detection Case Study"""
 import time
 import requests
-import pymongo
+# import pymongo - not needed
 import pandas as pd
 from sqlalchemy import create_engine
 from getpass import getpass
