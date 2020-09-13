@@ -37,8 +37,7 @@ def combine_dfs(cleaned_rows, cleaned_ticket_type):
 
 
 if __name__=='__main__':
-    db_details = f'postgresql://postgres:galvanize@52.15.236.214:5432/fraud_data'
-    # db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
+    db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
     engine = setup_db(db_details)
     # get some test data from api db
     with engine.connect() as conn:
