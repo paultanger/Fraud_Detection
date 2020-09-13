@@ -43,9 +43,11 @@ class EventAPIClient:
         exists = self.engine.execute(query)
         if not exists.rowcount:
             with self.engine.connect() as conn:
-                    self.row_df.to_sql('api_data', conn, if_exists='append', index=False)
-                    self.tix_types.to_sql('ticket_types', conn, if_exists='append', index=False)
-                    self.prev_pay_types.to_sql('previous_payouts', conn, if_exists='append', index=False)
+                    self.row_df.to_sql('api_data', conn, if_exists='append', index=False, method='multi')
+                    self.tix_types.to_sql('ticket_types', conn, if_exists='append', index=False, method='multi')
+                    self.prev_pay_types.to_sql('previous_payouts', conn, if_exists='append', index=False, method='multi')
+                    # add primary keys from object ids
+                    # conn.execute('ALTER TABLE api_data ADD PRIMARY KEY (object_id);')
             print('row saved to db')
         else:
             print('row exists')
@@ -86,16 +88,3 @@ if __name__ == "__main__":
     db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
     client = EventAPIClient(db=db_details)
     client.collect()
-    
-    # test check if exists
-    # row = client.get_data()
-    # row_df = pd.json_normalize(row)
-    # engine = create_engine(db_details)
-    # query = f'SELECT 1 FROM api_data WHERE object_id = {row_df["object_id"][0]};'
-    # query = f'SELECT 1 FROM api_data WHERE object_id = 0;'
-    # print(query)
-    # result = engine.execute(query)
-    # if not result.rowcount:
-    #     print('success')
-    # for r in result:
-    #     print(r)
