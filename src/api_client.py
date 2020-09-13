@@ -2,7 +2,9 @@
 import time
 import requests
 import pymongo
-
+import pandas as pd
+from sqlalchemy import create_engine
+from getpass import getpass
 
 class EventAPIClient:
     """Realtime Events API Client"""
@@ -17,11 +19,39 @@ class EventAPIClient:
         self.api_url = api_url
         self.api_key = api_key
         self.db = db
+        self.engine = create_engine(self.db)
         self.interval = 30
+        
 
     def save_to_database(self, row):
         """Save a data row to the database."""
-        print("Received data:\n" + repr(row) + "\n")  # replace this with your code
+        # convert to df
+        self.row_df = pd.json_normalize(row)
+        # drop ticket types and payout jsons
+        self.row_df.drop(['ticket_types', 'previous_payouts'], axis=1, inplace=True)
+        # unpack nested json of ticket types and prev payouts
+        self.tix_types = pd.json_normalize(data=row, record_path='ticket_types', meta=['object_id']) 
+        self.prev_pay_types = pd.json_normalize(data=row, record_path='previous_payouts', meta=['object_id']) 
+
+        # send to db
+        self.connect_db_add_row()
+    
+
+    def connect_db_add_row(self):
+        # check if object id exists, if does, don't add
+        query = f'SELECT 1 FROM api_data WHERE object_id = {self.row_df["object_id"][0]};'
+        exists = self.engine.execute(query)
+        if not exists.rowcount:
+            with self.engine.connect() as conn:
+                    self.row_df.to_sql('api_data', conn, if_exists='append', index=False, method='multi')
+                    self.tix_types.to_sql('ticket_types', conn, if_exists='append', index=False, method='multi')
+                    self.prev_pay_types.to_sql('previous_payouts', conn, if_exists='append', index=False, method='multi')
+                    # add primary keys from object ids
+                    # conn.execute('ALTER TABLE api_data ADD PRIMARY KEY (object_id);')
+            print('row saved to db')
+        else:
+            print('row exists')
+
 
     def get_data(self):
         """Fetch data from the API."""
@@ -31,6 +61,7 @@ class EventAPIClient:
         data = response.json()
         self.next_sequence_number = data['_next_sequence_number']
         return data['data']
+
 
     def collect(self, interval=30):
         """Check for new data from the API periodically."""
@@ -52,6 +83,8 @@ def main():
     client = EventAPIClient()
     client.collect()
 
-
 if __name__ == "__main__":
-    main()
+    # main()
+    db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
+    client = EventAPIClient(db=db_details)
+    client.collect()

@@ -1,7 +1,7 @@
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
@@ -22,8 +22,8 @@ def Logistic_reg_model(X,y):
     LR = LogisticRegression()
     LR.fit(X_train, y_train.values.ravel())
     y_predict = LR.predict(X_test)
-    confusion_matrix = confusion_matrix(y_test, y_pred)
-    return LR.score(X_test, y_test), confusion_matrix
+    score = LR.score(X_test,y_test)
+    return score, confusion_matrix(y_test, y_predict), f1_score(y_test, y_predict)
 
 def KN_model(X,y, neigh):
     X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
@@ -31,7 +31,15 @@ def KN_model(X,y, neigh):
     N_model.fit(X_train,y_train.values.ravel())
     y_predict = N_model.predict(X_test)
     confusion_matrix = confusion_matrix(y_test, y_pred)
-    return N_model.score(X_test,y_test), confusion_matrix
+    return N_model.score(X_test,y_test), confusion_matrix(y_test, y_predict), f1_score(y_test, y_predict)
+
+def GB_classifier(X,y):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+    GB_model = GradientBoostingClassifier()
+    GB_model.fit(X_train, y_train.values.ravel())
+    y_predict = GB_model.predict(X_test)
+    score = GB_model.score(X_test, y_test)
+    return score, confusion_matrix(y_test, y_predict), f1_score(y_test, y_predict), GB_model
 
 def balance_work(y_train):
     n1 = np.sum(y_train)
@@ -69,7 +77,7 @@ if __name__=='__main__':
     # w1, w2 = balance_work(y_train)
 
     #--- RF round 2 with ticket added
-    rf_score2, rf_matrix2, f1_2, model2 = Random_forest_model(X, y, 50, 'sqrt')
+    # rf_score2, rf_matrix2, f1_2, model2 = Random_forest_model(X, y, 50, 'sqrt')
     # 0.9862637362637363, ([tn = 4292, fp = 13, fn = 52, tp = 375]), 0.9202453987730062
 
     #--- RF round 1 just X and y
@@ -77,11 +85,11 @@ if __name__=='__main__':
     #0.978021978021978, ([[tn = 4285, fp = 20], [fn = 84, tp = 343]]), 0.8683544303797468, model
     # prob_lst = model.predict_proba(X)
 
-    # get features importances
-    names = X.columns
-    feature_importance(model2, names)
-    plt.savefig('../images/feat_importances.png')
-    plt.show()
+    # # get features importances
+    # names = X.columns
+    # feature_importance(model2, names)
+    # plt.savefig('../images/feat_importances.png')
+    # plt.show()
 
     # roc plot
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42, stratify=y)
@@ -91,5 +99,9 @@ if __name__=='__main__':
     # with open('../web_app/model2.pkl', 'wb') as f:
     #     # Write the model to a file.
     #     pickle.dump(model2, f)
+
+    #--- GB round 1
+    # 0.9866108786610879, ([[3248,   11], [  37,  289]])), 0.9233226837060704
+    GB_score1, GB_matrix, f1, model1 = GB_classifier(X,y)
      
 
