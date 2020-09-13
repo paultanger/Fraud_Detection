@@ -43,8 +43,17 @@ def main():
         conn.execute('ALTER TABLE api_data ADD COLUMN sequence_number bigint;')
         # add primary key
         conn.execute('ALTER TABLE api_data ADD PRIMARY KEY (object_id);')
+        # add timestamp column
+        conn.execute('ALTER TABLE api_data ADD COLUMN created_at TIMESTAMP;')
+        # set default for new rows to now
+        conn.execute('ALTER TABLE api_data ALTER COLUMN created_at SET DEFAULT now();')
         # now drop the rows so it is clean table for the api
         conn.execute('DELETE FROM api_data;')
+        # check timezone options
+        # SELECT * FROM pg_timezone_names;
+        # setup timezone for this db
+        conn.execute("SET TIMEZONE='US/Mountain';") # for current session
+        conn.execute("ALTER DATABASE fraud_data SET timezone TO 'US/Mountain';") # works after db restart
 
 
 if __name__ == "__main__":
