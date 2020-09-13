@@ -62,16 +62,20 @@ def analysis():
 # display most recent 10 from api
 @app.route('/recent10')
 def recent10():
-    query = "SELECT * FROM api_data WHERE created_at IS NOT NULL ORDER BY created_at DESC LIMIT 10;"
+    query = "SELECT body_length, channels, country, currency, delivery_method, description, email_domain, \
+                fb_published, has_analytics, name, org_name, \
+                sale_duration, user_age, venue_country, venue_name, created_at \
+                FROM api_data WHERE created_at IS NOT NULL ORDER BY created_at DESC LIMIT 10;"
     try:
         rows = pd.read_sql(query, con=engine)
     except:
         return f"""something is broken"""
-
-    return render_template('recent10.html', tables=[rows.to_html(classes='data')], titles=rows.columns.values)
+    # return render_template('recent10.html', rows=[rows.to_html(
+    #     classes='table table-striped', index=False, table_id= 'recent10table')], titles=['na', rows.columns.values])
+    return render_template('recent10.html', data=rows.to_html( classes='table table-bordered', 
+                            index=False, table_id='dataTable', border=0))
 
 # let user choose some parameters on what to query
-
 @app.route('/query_form')
 def query_form():
     # form action is what to do when submitted
@@ -93,7 +97,8 @@ def query_results():
     except:
         return f"""something is broken"""
 
-    return render_template('query_results.html', tables=[rows.to_html(classes='data')], titles=rows.columns.values)
+    return render_template('query_results.html', data=rows.to_html( classes='table table-bordered', 
+                            index=False, table_id='dataTable', border=0))
 
 # custom 404
 @app.errorhandler(404)
