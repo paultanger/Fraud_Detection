@@ -2,7 +2,8 @@ from flask import Flask, request, render_template
 import pickle
 import numpy as np
 import pandas as pd
-
+from getpass import getpass
+from src.api_client import EventAPIClient
 # #---     use pickle to load in the pre-trained model; loaded at the top of the app, loaded into memory ONCE on the server rather than loaded every time
 # with open(f'','rb') as f:
 #     model = pickle.load(f)
@@ -40,9 +41,17 @@ def reverse_string():
 def analysis():
     return render_template("analysis.html", tables=[x.to_html(classes='data')], titles=x.columns.values)
 
+def run_api(db_details):
+    client = EventAPIClient(db=db_details)
+    client.collect()
 
 if __name__ == '__main__':
+    # setup api save to db
+    # db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
+    # run_api(db_details)
     app.run(host='0.0.0.0', port=8080, debug=True)
+    # for AWS
+    # app.run(host='0.0.0.0', port=33507, debug=False)
 
 
 """
