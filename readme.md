@@ -88,3 +88,18 @@ If 0.91 <= predict_prob = LOW
 # Next steps
 Bring together all the components into a working, interactive flask app.
 
+## notes on the code:
+* in `src/load_json_to_db.py` loads the original data into these tables:
+    - `original_data`
+    - `org_ticket_types`
+    - `org_previous_payouts`
+
+* The second and third tables were nested json and were broken out.  Each table has `object_id` (and in the original data table it is the primary key).  The second and third tables have multiple rows for `object_id` and will be aggregated later.
+
+* Then `api_client.py` can be run and will keep adding rows to these tables:
+    - api_data
+    - ticket_types
+    - previous_payouts
+
+* `api_data` actually has some columns that aren't in the API data and could be updated later: `acct_type` and `approx_payout_date`.  Also of note, the api data has a `sequence_number` that the original data doesn't have.
+
