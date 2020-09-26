@@ -85,6 +85,6 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    db_details = f'postgresql://postgres:{getpass()}@52.15.236.214:5432/fraud_data'
+    db_details = f'postgresql://postgres:{getpass()}@3.128.75.60:5432/fraud_data'
     client = EventAPIClient(db=db_details)
     client.collect()
