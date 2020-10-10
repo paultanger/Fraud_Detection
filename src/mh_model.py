@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import json
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -59,26 +60,49 @@ def random_forest(X_train, X_test, y_train, y_test, num_trees, num_features):
     return score, confusion_matrix(y_test, y_predict), f1_score(y_test, y_predict), rf_model
 
 if __name__ == "__main__":
-    given = pd.read_json('../data.json')
-    api = pd.read_csv("../data/api_data.csv")
-
-    #find columns in given not api
-    given_not_api = []
-    for c in given.columns:
-        if c not in api.columns:
-            given_not_api.append(c)
-
+    #---    DF SET UP
     #bring in number df from original work
-    num_x = pd.read_csv("../data/number_df.csv").drop('Unnamed: 0', axis = 1)
-    y = pd.read_csv("../data/number_target.csv").drop('Unnamed: 0', axis = 1)
+    num_x = pd.read_csv("../data/number_df.csv").drop('Unnamed: 0', axis = 1) #rows = 14337
+    y = pd.read_csv("../data/number_target.csv").drop('Unnamed: 0', axis = 1) #rows = 14337
+    #remove columns not in API, brings down to 22 numerical columns
+    num_x.drop(['gts','approx_payout_date', 'num_order', 
+                'num_payouts', 'sale_duration2'], axis = 1, inplace = True) 
+    #load json to get nested json dicts
+    with open('../data.json') as f:
+        json_data = json.load(f)
 
-    #remove columns not in API, brings down to 22 columns
-    num_x.drop(['gts','approx_payout_date', 'num_order', 'num_payouts', 'sale_duration2'], axis = 1, inplace = True) 
+    #---    TIX_TYPES
+    #unpack nested dictionary and groupby
+    tix_types = pd.json_normalize(data=json_data, record_path='ticket_types', errors='ignore')
+    tix_types = tix_types.groupby('event_id').agg({'cost':'sum',
+                                                'quantity_total':'sum','quantity_sold':'sum'}).reset_index() #rows = 14249
+    full = pd.merge(num_x, tix_types, how = 'left',  left_on = 'object_id', right_on = 'event_id')
+    #drop event to avoid duplicate columns
+    full.drop('event_id', axis = 1, inplace = True)   
 
-    X_train, X_test, y_train, y_test = train_test_split(num_x, y, test_size=0.25, random_state=42, stratify=y)
+    #---    PREV_PAY_TYPES
+    #unpack nested dictionary and groupby
+    prev_pay_types = pd.json_normalize(data=json_data, record_path='previous_payouts', errors='ignore')
+    prev_pay_types = prev_pay_types.groupby('event').agg({'amount':'sum'}).reset_index()
+    #merge prev_pay_types onto num_x
+    full = pd.merge(full, prev_pay_types, how = 'left',  left_on = 'object_id', right_on = 'event') 
+    #drop event to avoid duplicate columns
+    full.drop('event', axis = 1, inplace = True)
+    #replace NaN with 0 will represent they were not previously paid
+    full['amount'].fillna(0, inplace = True)
+    #some infinity values exist
+    full.replace([np.inf, -np.inf], 0) 
+
+    #---    MODEL + RESULTS 
+    X_train, X_test, y_train, y_test = train_test_split(full, y, test_size=0.25, random_state=42, stratify=y)
     x_o, y_o = oversample(X_train.values, np.ravel(y_train.values), 0.5)
     rf_score, rf_matrix, f1, model = random_forest(x_o, X_test, y_o, y_test, 200, 'sqrt')
 
+    #error with model "Input contains NaN, infinity or a value too large for dtype('float32')"
+    #np.min(x_o) & np.max(x_o) = nan
+    #np.where does not find nan
+
+    #---    HEATMAP
     group_names = ['True Neg','False Pos','False Neg','True Pos']
     group_counts = ['{0:0.0f}'.format(value) for value in
                 rf_matrix.flatten()]
@@ -91,13 +115,7 @@ if __name__ == "__main__":
     plt.show();
 
 
-    # load json to get nested json dicts
-    with open('../data.json') as f:
-        json_data = json.load(f)
-    # unpack nested json of ticket types and prev payouts
-    tix_types = pd.json_normalize(data=json_data, record_path='ticket_types', errors='ignore') 
-    prev_pay_types = pd.json_normalize(data=json_data, record_path='previous_payouts', errors='ignore')
-
+    #--- LogisticRegression
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import KFold
     from sklearn.metrics import accuracy_score, precision_score, recall_score
@@ -118,3 +136,12 @@ if __name__ == "__main__":
     print(f"Accuracy: {np.average(accuracies):.3f}")
     print(f"Precision: {np.average(precisions):.3f}")
     print(f"Recall: {np.average(recalls):.3f}")
+
+
+    #---    THROW AWAY CODE
+    #adjusted datetime, don't believe we need
+    # prev_pay_types['created'] = pd.to_datetime(prev_pay_types['created'])
+    # prev_pay_types['time'] = prev_pay_types['created'].dt.time
+    # prev_pay_types['month'] = prev_pay_types['created'].dt.month
+    # prev_pay_types['day'] = prev_pay_types['created'].dt.day
+    # prev_pay_types['year'] = prev_pay_types['created'].dt.year
