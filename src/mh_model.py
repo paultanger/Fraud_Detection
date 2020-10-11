@@ -59,6 +59,13 @@ def random_forest(X_train, X_test, y_train, y_test, num_trees, num_features):
     score = rf_model.score(X_test,y_test)
     return score, confusion_matrix(y_test, y_predict), f1_score(y_test, y_predict), rf_model
 
+def fill_nan(df, cols):
+    ''' takes df and col to fill nan value with 0 '''
+    for col in cols:
+        df[col].fillna(0, inplace = True)
+    return df
+
+
 if __name__ == "__main__":
     #---    DF SET UP
     #bring in number df from original work
@@ -89,10 +96,10 @@ if __name__ == "__main__":
     #drop event to avoid duplicate columns
     full.drop('event', axis = 1, inplace = True)
     #replace NaN with 0 will represent they were not previously paid
-    full['amount'].fillna(0, inplace = True)
+    full = fill_nan(full, ['quantity_total', 'quantity_sold', 'cost', 'amount'])
     #some infinity values exist
     full.replace([np.inf, -np.inf], 0) 
-
+'''
     #---    MODEL + RESULTS 
     X_train, X_test, y_train, y_test = train_test_split(full, y, test_size=0.25, random_state=42, stratify=y)
     x_o, y_o = oversample(X_train.values, np.ravel(y_train.values), 0.5)
@@ -145,3 +152,4 @@ if __name__ == "__main__":
     # prev_pay_types['month'] = prev_pay_types['created'].dt.month
     # prev_pay_types['day'] = prev_pay_types['created'].dt.day
     # prev_pay_types['year'] = prev_pay_types['created'].dt.year
+'''
