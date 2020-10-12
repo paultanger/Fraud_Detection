@@ -23,6 +23,9 @@ app = Flask(__name__, root_path='./') # template_folder = 'templates/')
 
 # remove template limit
 # app.jinja_env.cache = {}
+################################
+### LOADS ONCE #################
+################################
 
 @app.route('/', methods=['GET'])
 def home():
@@ -49,6 +52,11 @@ def recent10():
     return render_template('recent10.html', data=rows.to_html( classes='table table-bordered', 
                             index=False, table_id='dataTable', border=0))
 
+    # run sql to get df
+    # run clean function
+    # run model predict
+    # send df to html
+    
 # let user choose some parameters on what to query
 @app.route('/query_form')
 def query_form():
