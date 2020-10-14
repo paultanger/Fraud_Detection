@@ -16,11 +16,11 @@ def get_data(col, table_name):
     return df
 
 def fill_api(df):
-  ''' take in the api data and fill any NaN or 0 '''
-  fill = pd.read_csv("fillwith.csv").drop('Unnamed: 0', axis = 1)
-  for idx, c in enumerate(fill['col']):
-    df[c].fillna(fill.iloc[idx,0], inplace = True)    
-  return df
+    ''' take in the api data and fill any NaN or 0 '''
+    fill = pd.read_csv("fillwith.csv").drop('Unnamed: 0', axis = 1)
+    for idx, c in enumerate(fill['col']):
+        df[c].fillna(fill.iloc[idx,0], inplace = True)    
+    return df
 
 def run_model(df):
     ''' loads model, makes a prediction, creates prediction column '''
@@ -53,10 +53,15 @@ if __name__ == '__main__':
 
     #---    GET DATAFRAMES NEEDED, MERGE, CLEAN 
     api_main = get_data(api_cols, 'api_data')
+    
     prev_payouts = get_data(['amount', 'object_id'], 'previous_payouts')
+    prev_payouts = prev_payouts.groupby('object_id').agg({'amount':'sum'}).reset_index()
+    
     ticket_types = get_data(['object_id', 'cost', 'quantity_total'], 'ticket_types')
-    full = pd.merge(api_main, prev_payouts, how='inner', on = 'object_id')
-    full = pd.merge(full, ticket_types, how='inner', on = 'object_id')
+    ticket_types = ticket_types.groupby('object_id').agg({'quantity_total':'sum', 'cost':'sum'}).reset_index()
+
+    full = pd.merge(api_main, prev_payouts, how='left', on = 'object_id')
+    full = pd.merge(full, ticket_types, how='left', on = 'object_id')
     full = fill_api(full)
     print("Dataframes created")
 
