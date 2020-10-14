@@ -71,7 +71,7 @@ cols = ['body_length',
  'venue_longitude']
 
 # 3 parts:
-# 1. from api_data
+#DONE 1. from api_data
 
 # example
 # query = "SELECT body_length, channels, country, currency, delivery_method, description, email_domain, \
@@ -88,7 +88,7 @@ api_data_main[api_data_main['object_id'] == 7464371] #object from prev
 
 object_ids = api_data_main['object_id'].unique()
 
-# 2. from previous payouts
+#DONE 2. from previous payouts
 
 cols_prev_payouts = ['amount', 'object_id']
 query = f'SELECT {", ".join(x for x in cols_prev_payouts)} FROM previous_payouts;'
@@ -96,32 +96,54 @@ query = f'SELECT {", ".join(x for x in cols_prev_payouts)} FROM previous_payouts
 prev_payouts = pd.read_sql(query, con=db_connection)
 prev_payouts.shape
 
-# get sum...
+#DONE get sum...
 
-# 3. from ticket types table
+prev_payouts = prev_payouts.groupby('object_id').agg({'amount':'sum'}).reset_index()
+
+#DONE 3. from ticket types table
 cols_ticket_types = ['object_id', 'cost', 'quantity_total']
 query = f'SELECT {", ".join(x for x in cols_ticket_types)} FROM ticket_types;'
 ticket_types = pd.read_sql(query, con=db_connection)
 ticket_types.shape
 ticket_types.head()
 
-#.... 
 
-# output: 3 pandas dfs
+#DONE output: 3 pandas dfs
 
-# groupby and sum for prev payouts and tickets using object_id
+#DONE groupby and sum for prev payouts and tickets using object_id
 
-# merge them together into one df (based on something.. object_id)
+#DONE merge them together into one df (based on something.. object_id)
+  #note: left will keep all of api and only bring in what matches from prev many NaN
+full = pd.merge(api_data_main, prev_payouts, how='inner', on = 'object_id')
+full = pd.merge(full, ticket_types, how='inner', on = 'object_id')
 
-# clean whatever we need, maybe drop cols... (function)
-# insert means for nans.. from training data
+#DONE clean whatever we need, maybe drop cols... (function) insert means for nans.. from training data
+def fill_api(df):
+  ''' take in the api data and fill any NaN or 0 '''
+  fill = pd.read_csv("fillwith.csv").drop('Unnamed: 0', axis = 1)
+  for idx, c in enumerate(fill['col']):
+    df[c].fillna(fill.iloc[idx,0], inplace = True)    
+  return df
 
-# --- get this from model.. does this give us a vector... 
+full = fill_api(full)
+
+#DONE bring in model
+loaded_model = pickle.load(open('finalized_model.sav', 'rb'))
+
+#DONE update each row with a column called prediction
+fraud_prob = []
+not_fraud_prob = []
+for idx in range(full.shape[0]):
+  row = full.iloc[idx,:].values
+  prob = loaded_model.predict_proba(row.reshape(1,-1))
+  fraud_prob.append(prob.tolist()[0][1])
+  not_fraud_prob.append(prob.tolist()[0][0])  
+
+full['not_fraud'] = not_fraud_prob
+full['fraud_prob'] = fraud_prob
 # consider threshold and turn proba into fraud/not fraud
 
-# update each row with a column called prediction
-
-# final df with predictions
+#DONE final df with predictions
 
 
 # to do list

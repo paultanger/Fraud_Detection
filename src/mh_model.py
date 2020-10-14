@@ -65,31 +65,6 @@ def fill_nan(df, cols):
         df[col].fillna(0, inplace = True)
     return df
 
-def tix_type(df):
-    ''' unpack nested dictionary and groupby '''
-
-    return full
-
-
-def api_to_model(api_df, train_df):
-    ''' takes in API data and prepares it to be run through model '''
-    model_col = list(train_df.columns)
-    api_model = api[model_col[:-4]]
-
-    #-- fill NaN with mean
-    api_model['delivery_method'] = api_model.loc['delivery_method'].fillna(api_model['delivery_method'].mean())
-    api_model['event_published'] = api_model.loc['event_published'].fillna(api_model['event_published'].mean())
-    api_model['event_published'] = api_model.loc['event_published'].fillna(api_model['org_facebook'].mean())
-    api_model['org_twitter'] = api_model.loc['org_twitter'].fillna(api_model['org_twitter'].mean())
-    api_model['org_twitter'] = api_model.loc['org_twitter'].fillna(api_model['sale_duration'].mean())
-    api_model['org_twitter'] = api_model.loc['org_twitter'].fillna(api_model['has_header'].mean())
-
-    #-- fill NaN with 0
-    api_model['venue_latitude'] = api_model.loc['venue_latitude'].fillna(0)
-    api_model['venue_longitude'] = api_model.loc['venue_longitude'].fillna(0)
-
-    return test_api
-
 
 if __name__ == "__main__":
     #---    DF SET UP
@@ -107,7 +82,7 @@ if __name__ == "__main__":
     #unpack nested dictionary and groupby
     tix_types = pd.json_normalize(data=json_data, record_path='ticket_types', errors='ignore')
     tix_types = tix_types.groupby('event_id').agg({'cost':'sum',
-                                                'quantity_total':'sum','quantity_sold':'sum'}).reset_index() #rows = 14249
+                                                'quantity_total':'sum'}).reset_index() #rows = 14249
     full = pd.merge(num_x, tix_types, how = 'left',  left_on = 'object_id', right_on = 'event_id')
     #drop event to avoid duplicate columns
     full.drop('event_id', axis = 1, inplace = True)   
@@ -121,14 +96,37 @@ if __name__ == "__main__":
     #drop event to avoid duplicate columns
     full.drop('event', axis = 1, inplace = True)
     #replace NaN with 0 will represent they were not previously paid
-    full = fill_nan(full, ['quantity_total', 'quantity_sold', 'cost', 'amount'])
+    full = fill_nan(full, ['quantity_total', 'cost', 'amount'])
     #some infinity values exist
     full.replace([np.inf, -np.inf], 0) 
 
+'''
+#used to get fill with information for API
+    fill_with = []
+    cols= ['delivery_method', 'event_published', 'org_facebook', 'org_twitter', 'sale_duration', 'has_header']
+    for col in cols:
+        fill_with.append(np.mean(full[col]))
+
+    fill_with = pd.DataFrame(data = fill_with)
+    fill_with['col'] = cols
+    fill_with.rename(columns={0:"value"}, inplace = True)
+    new_row = {'value':0, 'col':'venue_longitude'}
+    fill_with = fill_with.append(new_row, ignore_index=True)
+    new_row = {'value':0, 'col':'venue_latitude'}
+    fill_with = fill_with.append(new_row, ignore_index=True)
+'''
     #---    MODEL + RESULTS 
     X_train, X_test, y_train, y_test = train_test_split(full, y, test_size=0.25, random_state=42, stratify=y)
     x_o, y_o = oversample(X_train.values, np.ravel(y_train.values), 0.5)
     rf_score, rf_matrix, f1, model = random_forest(x_o, X_test, y_o, y_test, 200, 'sqrt')
+
+    #---    PICKLE MODEL
+    import pickle
+    filename = 'finalized_model.sav'
+    pickle.dump(model, open(filename, 'wb'))
+    # code for later
+    # loaded_model = pickle.load(open('finalized_model.sav', 'rb'))
+    # result = loaded_model.score(X_test, Y_test)
 
     #---    HEATMAP
     group_names = ['True Neg','False Pos','False Neg','True Pos']
@@ -141,10 +139,6 @@ if __name__ == "__main__":
     labels = np.asarray(labels).reshape(2,2)
     sns.heatmap(rf_matrix, annot=labels, fmt='', cmap='Blues')
     plt.show();
-
-    #---    RUN API DATA
-    api = pd.read_csv('../data/api_data.csv')
-
 
 
     #---    THROW AWAY CODE
