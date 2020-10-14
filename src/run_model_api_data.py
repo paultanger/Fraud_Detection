@@ -10,7 +10,7 @@ import sys
 def setup_db(db_details):
     return create_engine(db_details)
 
-db_details = f'postgresql://postgres:galvanize@3.128.75.60:5432/fraud_data'
+db_details = f'postgresql://postgres:{getpass()}@3.128.75.60:5432/fraud_data'
 # now we have a db connection setup
 db_connection = setup_db(db_details)
 
