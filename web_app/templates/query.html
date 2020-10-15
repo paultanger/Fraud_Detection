@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+        <h1 class="mt-4">Review Dashboard selection</h1>
+        <p>Here you can examine the model predictions</p>
+      <p>right now, you can only choose 1 sample at a time.</p> 
+        <p>choose if you want to view correct or incorrect predictions:</p> 
+        <form action="/results" method="POST">
+          <!-- <input type="text" name="predict_type" /> -->
+          <select name="predict_type">
+            <option value="Incorrect Predictions">Incorrect Predictions</option>
+            <option value="Correct Predictions">Correct Predictions</option>
+            </select>
+          <!-- <input type="submit" /> -->
+          <p></p>
+          <p>enter number of samples to view:</p> 
+          <input type="number" name="n_records" min="1" max="1"/>
+          <p></p>
+          <p>once you have selected the options, click below:</p>
+          <input type="submit" value="view results"/>
+        </form>
+        {% endblock %}
