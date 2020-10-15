@@ -120,7 +120,7 @@ full = pd.merge(full, ticket_types, how='inner', on = 'object_id')
 #DONE clean whatever we need, maybe drop cols... (function) insert means for nans.. from training data
 def fill_api(df):
   ''' take in the api data and fill any NaN or 0 '''
-  fill = pd.read_csv("fillwith.csv").drop('Unnamed: 0', axis = 1)
+  fill = pd.read_csv("../data/fillwith.csv").drop('Unnamed: 0', axis = 1)
   for idx, c in enumerate(fill['col']):
     df[c].fillna(fill.iloc[idx,0], inplace = True)    
   return df
@@ -128,7 +128,7 @@ def fill_api(df):
 full = fill_api(full)
 
 #DONE bring in model
-loaded_model = pickle.load(open('finalized_model.sav', 'rb'))
+loaded_model = pickle.load(open('../data/finalized_model.sav', 'rb'))
 
 #DONE update each row with a column called prediction
 fraud_prob = []
