@@ -15,7 +15,6 @@ from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve, f1_score
 from sklearn.tree import DecisionTreeClassifier
 from predict import * 
 
-
 def div_count_pos_neg(X, y):
     negatives, positives = y == 0, y == 1
     negative_count, positive_count = np.sum(negatives), np.sum(positives)
@@ -63,6 +62,7 @@ def random_forest(X_train, X_test, y_train, y_test, num_trees, num_features):
     return score, confusion_matrix(y_test, y_predict), f1_score(y_test, y_predict), rf_model
 
 if __name__ == "__main__":
+    pass
     # cleaned_sample = all_together('../data/api_data.csv')
 
     #---    GET DATA & CONCAT 
@@ -73,14 +73,14 @@ if __name__ == "__main__":
     ticket = ticket.replace(np.inf, 110)
     X = pd.concat([num_x, ticket],axis=1)
 
-    #---    GET TTS THEN OVER SAMPLE     
+    # #---    GET TTS THEN OVER SAMPLE     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42, stratify=y)
     x_o, y_o = oversample(X_train.values, np.ravel(y_train.values), 0.5)
 
-    #---    RUN MODEL    
-    rf_score2, rf_matrix2, f1_2, model2 = random_forest(x_o, X_test, y_o, y_test, 200, 'sqrt')
+    # #---    RUN MODEL    
+    # rf_score2, rf_matrix2, f1_2, model2 = random_forest(x_o, X_test, y_o, y_test, 200, 'sqrt')
 
-    #---    HEATMAP    
+    # #---    HEATMAP    
     group_names = ['True Neg','False Pos','False Neg','True Pos']
     group_counts = ['{0:0.0f}'.format(value) for value in
                 rf_matrix2.flatten()]

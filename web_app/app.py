@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
 from getpass import getpass
+import sys
 
 def setup_db(db_details):
     return create_engine(db_details)
@@ -22,24 +23,13 @@ app = Flask(__name__, root_path='./') # template_folder = 'templates/')
 
 # remove template limit
 # app.jinja_env.cache = {}
+################################
+### LOADS ONCE #################
+################################
 
 @app.route('/', methods=['GET'])
 def home():
     return render_template("index.html")
-
-@app.route('/form_example', methods=['GET'])
-def form_display():
-    return ''' <form action="/string_reverse" method="POST">
-                <input type="text" name="some_string" />
-                <input type="submit" />
-               </form>
-             '''
-
-@app.route('/string_reverse', methods=['POST'])
-def reverse_string():
-    text = str(request.form['some_string'])
-    reversed_string = text[-1::-1]
-    return ''' output: {}  '''.format(reversed_string)
 
 #---    getting a pandas df to display on a web app
 @app.route('/analysis') 
@@ -62,6 +52,11 @@ def recent10():
     return render_template('recent10.html', data=rows.to_html( classes='table table-bordered', 
                             index=False, table_id='dataTable', border=0))
 
+    # run sql to get df
+    # run clean function
+    # run model predict
+    # send df to html
+    
 # let user choose some parameters on what to query
 @app.route('/query_form')
 def query_form():
