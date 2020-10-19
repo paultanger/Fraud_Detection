@@ -100,21 +100,6 @@ if __name__ == "__main__":
     #some infinity values exist
     full.replace([np.inf, -np.inf], 0) 
 
-'''
-#used to get fill with information for API
-    fill_with = []
-    cols= ['delivery_method', 'event_published', 'org_facebook', 'org_twitter', 'sale_duration', 'has_header']
-    for col in cols:
-        fill_with.append(np.mean(full[col]))
-
-    fill_with = pd.DataFrame(data = fill_with)
-    fill_with['col'] = cols
-    fill_with.rename(columns={0:"value"}, inplace = True)
-    new_row = {'value':0, 'col':'venue_longitude'}
-    fill_with = fill_with.append(new_row, ignore_index=True)
-    new_row = {'value':0, 'col':'venue_latitude'}
-    fill_with = fill_with.append(new_row, ignore_index=True)
-'''
     #---    MODEL + RESULTS 
     X_train, X_test, y_train, y_test = train_test_split(full, y, test_size=0.25, random_state=42, stratify=y)
     x_o, y_o = oversample(X_train.values, np.ravel(y_train.values), 0.5)
@@ -124,9 +109,6 @@ if __name__ == "__main__":
     import pickle
     filename = 'finalized_model.sav'
     pickle.dump(model, open(filename, 'wb'))
-    # code for later
-    # loaded_model = pickle.load(open('finalized_model.sav', 'rb'))
-    # result = loaded_model.score(X_test, Y_test)
 
     #---    HEATMAP
     group_names = ['True Neg','False Pos','False Neg','True Pos']
@@ -139,33 +121,3 @@ if __name__ == "__main__":
     labels = np.asarray(labels).reshape(2,2)
     sns.heatmap(rf_matrix, annot=labels, fmt='', cmap='Blues')
     plt.show();
-
-
-    #---    THROW AWAY CODE
-    # from sklearn.linear_model import LogisticRegression
-    # from sklearn.model_selection import KFold
-    # from sklearn.metrics import accuracy_score, precision_score, recall_score
-    
-    #LogisticRegression
-    # kfold = KFold(n_splits=5)
-    # accuracies = []
-    # precisions = []
-    # recalls = []
-    # for train_idx, test_idx in kfold.split(x_o):
-    #     model = LogisticRegression()
-    #     model.fit(x_o[train_idx], y_o[train_idx])
-    #     y_pred = model.predict(x_o[test_idx])
-    #     y_true = y_o[test_idx]
-    #     accuracies.append(accuracy_score(y_true, y_pred))
-    #     precisions.append(precision_score(y_true, y_pred))
-    #     recalls.append(recall_score(y_true, y_pred))
-    # print(f"Accuracy: {np.average(accuracies):.3f}")
-    # print(f"Precision: {np.average(precisions):.3f}")
-    # print(f"Recall: {np.average(recalls):.3f}")
-
-    #adjusted datetime, don't believe we need
-    # prev_pay_types['created'] = pd.to_datetime(prev_pay_types['created'])
-    # prev_pay_types['time'] = prev_pay_types['created'].dt.time
-    # prev_pay_types['month'] = prev_pay_types['created'].dt.month
-    # prev_pay_types['day'] = prev_pay_types['created'].dt.day
-    # prev_pay_types['year'] = prev_pay_types['created'].dt.year
