@@ -52,12 +52,10 @@ During our initial exploration of our data we expected, and quickly realized, th
  
 With the imbalanced classes we had during our test phase we knew accuracy would not be the best metric to evaluate our model. We chose to look at the F1 score, which is the harmonic mean of recall and precision of our results from our random forest classifier model.
 
-OLD NEED TO UPDATE<p><p>
-![fn](images/cm.png)
+![fn](images/heatmap.png)
 
 ### ROC
-OLD NEED TO UPDATE
-![fn](images/ROC1.png)
+![fn](images/roc.png)
 
 ### Flagging Fraud
 Once our model was trained and ready to predict on the data we were able to gather from the API we utilized ```.predict_proba``` and created new columns with the probability that transaction was fraudlent. 

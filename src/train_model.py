@@ -74,7 +74,7 @@ if __name__ == "__main__":
     num_x.drop(['gts','approx_payout_date', 'num_order', 
                 'num_payouts', 'sale_duration2'], axis = 1, inplace = True) 
     #load json to get nested json dicts
-    with open('../data.json') as f:
+    with open('../data/data.json') as f:
         json_data = json.load(f)
 
     #---    TIX_TYPES
@@ -118,5 +118,12 @@ if __name__ == "__main__":
     labels = [f'{v1}\n{v2}\n{v3}' for v1, v2, v3 in
           zip(group_names,group_counts,group_percentages)]
     labels = np.asarray(labels).reshape(2,2)
-    sns.heatmap(rf_matrix, annot=labels, fmt='', cmap='Blues')
+    sns.heatmap(rf_matrix, annot=labels, 
+                xticklabels=['Not Fraud', 'Fraud'], yticklabels=['Not Fraud','Fraud'], 
+                fmt='', cmap='Blues')
+    plt.title('Confusion Matrix \n Actual vs. Predicted')
     plt.show();
+
+    #---    ROC CURVE
+    metrics.plot_roc_curve(model, X_test, y_test)
+    plt.show()
