@@ -47,33 +47,20 @@ We created a postgres database
 
 ## Modeling
 
-### Accuracy metrics selected
-F1 score: harmonic mean of recall and precision. We chose this because the classes were imbalanced. We wanted to make sure we did not have too many false negatives.
-
 ### Validation and Testing Methodology
-We split our dataset into train and test set stratifying to make sure we have the same ratio of fraud to to not fraud in both sets. We also oversampled the training dataset so there was a higher ratio of fraud in the training so that the model would not just guess all in the majority class. We tried using SMOTE technique instead of oversampling but oversampling performed better.
+During our initial exploration of our data we expected, and quickly realized, that we were dealing with imbalanced classes. Only 9% of the transactions coming through were being labeled as Fraudulent. In order to combat this we decided to oversample our fraudulent transactions during the training process so our model was seeing a higher ratio of fraud. which helped our model from just guessing the majority class. Other techniques that were attempted were SMOTE and undersampling of the majority class, neither yielded the same results as oversampling.
+ 
+With the imbalanced classes we had during our test phase we knew accuracy would not be the best metric to evaluate our model. We chose to look at the F1 score, which is the harmonic mean of recall and precision of our results from our random forest classifier model.
 
-We found a random forest classifier model to be the best performing model. It got an f1 score TODO: update this on test data.
-
+OLD NEED TO UPDATE<p><p>
 ![fn](images/cm.png)
 
-### discuss oversampling
-TODO: 
+### ROC
+OLD NEED TO UPDATE
+![fn](images/ROC1.png)
 
 ### Flagging Fraud
-Since our model did so well with identifying fraud we looked at the ```.predict_proba``` from our hold out data. We realized that the threshold our model created was very high to be marked as fraud so we decided to have the follow threshold for HIGH, MEDIUM, LOW risk:
-
-If 0.95 < predict_proba < 1 = HIGH
-If 0.95 <= predict_prob = MEDIUM
-If 0.91 <= predict_prob = LOW
-
-### Model validation
-discuss here
-
-### ROC
-TODO: revise with new ROC
-ROC plot:
-![fn](images/ROC1.png)
+Once our model was trained and ready to predict on the data we were able to gather from the API we utilized ```.predict_proba``` and created new columns with the probability that transaction was fraudlent. 
 
 ##  Web app
 FLask app discussion here

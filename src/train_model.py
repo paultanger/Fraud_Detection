@@ -1,6 +1,5 @@
 '''
 model trained with provided json file
-tested on api data
 '''
 import pandas as pd 
 import numpy as np
