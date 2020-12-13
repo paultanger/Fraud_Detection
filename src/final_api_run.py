@@ -17,14 +17,14 @@ def get_data(col, table_name):
 
 def fill_api(df):
     ''' take in the api data and fill any NaN or 0 '''
-    fill = pd.read_csv("fillwith.csv").drop('Unnamed: 0', axis = 1)
+    fill = pd.read_csv("data/fillwith.csv").drop('Unnamed: 0', axis = 1)
     for idx, c in enumerate(fill['col']):
         df[c].fillna(fill.iloc[idx,0], inplace = True)    
     return df
 
 def run_model(df):
     ''' loads model, makes a prediction, creates prediction column '''
-    loaded_model = pickle.load(open('finalized_model.sav', 'rb'))
+    loaded_model = pickle.load(open('data/finalized_model.sav', 'rb'))
     fraud_prob = []
     not_fraud_prob = []
     for idx in range(df.shape[0]):

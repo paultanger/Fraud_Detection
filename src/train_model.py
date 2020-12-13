@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn import metrics
-from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve, f1_score, plot_roc_curve
+from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve, f1_score, plot_roc_curve, precision_recall_curve
 
 def div_count_pos_neg(X, y):
     negatives, positives = y == 0, y == 1
@@ -64,8 +64,92 @@ def fill_nan(df, cols):
         df[col].fillna(0, inplace = True)
     return df
 
+def convert(row):
+    ''' defines y col based on account types'''
+    if row['acct_type'] == 'fraudster_event':
+        val=True
+    elif row['acct_type'] == 'fraudster':
+        val=True
+    elif row['acct_type'] == 'fraudster_att':
+        val=True
+    else:
+        val=False
+    return val
+
+def fill_mean(x,col):
+    x[col] = x[col].fillna(x[col].mean())
+
+def fill_zero(x,col):
+    x[col] = x[col].fillna(0)
 
 if __name__ == "__main__":
+
+    #---  ALTERNATIVE.. utilize data stored in db rather than in data/
+    db_details = f'postgresql://postgres:{getpass()}@3.128.75.60:5432/fraud_data'
+    engine = create_engine(db_details)
+    num_x = pd.read_sql('select * from original_data', con=engine)
+    # calculate y column
+    num_x_copy = num_x.copy()
+    num_x_copy['Fraud'] = num_x_copy.apply(convert, axis=1)
+    y = num_x_copy['Fraud']
+
+    # keep numerical cols
+    cols = ['body_length',
+    'channels',
+    'delivery_method',
+    'event_created',
+    'event_end',
+    'event_published',
+    'event_start',
+    'fb_published',
+    'has_analytics',
+    'has_header',
+    'has_logo',
+    'name_length',
+    'object_id',
+    'org_facebook',
+    'org_twitter',
+    'sale_duration',
+    'show_map',
+    'user_age',
+    'user_created',
+    'user_type',
+    'venue_latitude',
+    'venue_longitude']
+
+    num_x = num_x[cols]
+    # fill with mean or zero
+    fill_mean(num_x,'delivery_method')
+    fill_mean(num_x,'event_published')
+    fill_mean(num_x,'has_header')
+    fill_mean(num_x,'org_facebook')
+    fill_mean(num_x,'org_twitter')
+    fill_mean(num_x,'sale_duration')
+    fill_zero(num_x,'venue_latitude')
+    fill_zero(num_x,'venue_longitude')
+
+    # num_x.fillna(0, inplace=True)
+
+    # get tix types and prev payouts
+    tix_types = pd.read_sql('select * from org_ticket_types', con=engine)
+    tix_types = tix_types.groupby('event_id').agg({
+                                        'cost':'sum',
+                                        'quantity_total':'sum'}).reset_index()
+    prev_pay_types = pd.read_sql('select * from org_previous_payouts', con=engine)
+    prev_pay_types = prev_pay_types.groupby('event').agg({'amount':'sum'}).reset_index()
+
+    # merge
+    full = pd.merge(num_x, tix_types, how = 'left',  left_on = 'object_id', right_on = 'event_id')
+    full.drop('event_id', axis = 1, inplace = True)   
+    full = pd.merge(full, prev_pay_types, how = 'left',  left_on = 'object_id', right_on = 'event') 
+    full.drop('event', axis = 1, inplace = True) 
+    #replace NaN with 0 will represent they were not previously paid
+    full = fill_nan(full, ['quantity_total', 'cost', 'amount'])
+    #some infinity values exist
+    full = full.replace([np.inf, -np.inf], 0) 
+
+    # END VERSION USING DATA FROM DATABASE
+
     #---    DF SET UP
     #bring in number df from original work
     num_x = pd.read_csv("../data/number_df.csv").drop('Unnamed: 0', axis = 1) #rows = 14337
@@ -122,8 +206,20 @@ if __name__ == "__main__":
                 xticklabels=['Not Fraud', 'Fraud'], yticklabels=['Not Fraud','Fraud'], 
                 fmt='', cmap='Blues')
     plt.title('Confusion Matrix \n Actual vs. Predicted')
-    plt.show();
+    plt.show()
 
     #---    ROC CURVE
     metrics.plot_roc_curve(model, X_test, y_test)
     plt.show()
+
+    # precision recall curve
+    # https://www.kaggle.com/lct14558/imbalanced-data-why-you-should-not-use-roc-curve
+    pred_prob = model.predict_proba(X_test)[:,1]
+    p, r, _ = precision_recall_curve(y_test, pred_prob)
+    fig, ax = plt.subplots(1,1, figsize=(10,10))
+    ax.plot(r, p)
+    ax.set_xlabel('Recall', fontsize=14)
+    ax.set_ylabel('Precision', fontsize=14)
+    ax.set_title('Precision Recall Curve', fontsize=16)
+    # plt.show()
+    plt.savefig('images/prec_recall_plot.png')
