@@ -73,9 +73,9 @@ From ticket types, we utilized quantity of tickets available, and cost of each t
 We examined relationships between features and found that they were mostly not correlated with eachother:
 
 <br>
-<center>
+<p align="center">
 <img src="images/corr_plot.png" width="60%" alttext="correlation plot">
-</center>
+</p>
 <br>
 
 ### API and database implementation
@@ -94,9 +94,9 @@ During our initial exploration of our data we expected, and quickly realized, th
 With the imbalanced classes we had during our test phase we knew accuracy would not be the best metric to evaluate our model. We chose to look at the F1 score, which is the harmonic mean of recall and precision of our results from our random forest classifier model.
 
 <br>
-<center>
-<img src="images/heatmap.png" width="50%" alttext="confusion matrix plot">
-</center>
+<p align="center">
+<img src="images/heatmap.png" width="60%" alttext="confusion matrix plot">
+</p>
 <br>
 
 ### Flagging Fraud
@@ -106,9 +106,9 @@ Once our model was trained and ready to predict on the data we were able to gath
 Since ROC is not the best tool to examine model performance when we are interested in false negative rate, we utilized a precision recall plot to demonstrate our model performance:
 
 <br>
-<center>
-<img src="images/prec_recall_plot.png" width="50%" alttext="precision recall plot">
-</center>
+<p align="center">
+<img src="images/prec_recall_plot.png" width="60%" alttext="precision recall plot">
+</p>
 <br>
 
 ##  Web app
