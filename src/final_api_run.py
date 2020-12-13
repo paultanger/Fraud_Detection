@@ -68,3 +68,10 @@ if __name__ == '__main__':
     #---    LOAD MODEL, RUN ADD PREDICTION COLUMN
     full = run_model(full)
     print("Model predictions complete")
+
+    #---    SAVE MODEL RESULTS TO NEW TABLE IN DB
+    full.to_sql('api_data_processed', engine, if_exists='replace', index=False, method='multi')
+    # add timestamp column
+    engine.execute('ALTER TABLE api_data_processed ADD COLUMN created_at TIMESTAMP;')
+    # set default for new rows to now
+    engine.execute('ALTER TABLE api_data_processed ALTER COLUMN created_at SET DEFAULT now();')
