@@ -74,7 +74,7 @@ We examined relationships between features and found that they were mostly not c
 
 <br>
 <p align="center">
-<img src="images/corr_plot.png" width="60%" alttext="correlation plot">
+<img src="images/corr_plot.png" width="80%" alttext="correlation plot">
 </p>
 <br>
 
