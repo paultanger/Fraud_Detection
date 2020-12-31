@@ -17,14 +17,14 @@ def get_data(col, table_name):
 
 def fill_api(df):
     ''' take in the api data and fill any NaN or 0 '''
-    fill = pd.read_csv("fillwith.csv").drop('Unnamed: 0', axis = 1)
+    fill = pd.read_csv("data/fillwith.csv").drop('Unnamed: 0', axis = 1)
     for idx, c in enumerate(fill['col']):
         df[c].fillna(fill.iloc[idx,0], inplace = True)    
     return df
 
 def run_model(df):
     ''' loads model, makes a prediction, creates prediction column '''
-    loaded_model = pickle.load(open('finalized_model.sav', 'rb'))
+    loaded_model = pickle.load(open('data/finalized_model.sav', 'rb'))
     fraud_prob = []
     not_fraud_prob = []
     for idx in range(df.shape[0]):
@@ -68,3 +68,10 @@ if __name__ == '__main__':
     #---    LOAD MODEL, RUN ADD PREDICTION COLUMN
     full = run_model(full)
     print("Model predictions complete")
+
+    #---    SAVE MODEL RESULTS TO NEW TABLE IN DB
+    full.to_sql('api_data_processed', engine, if_exists='replace', index=False, method='multi')
+    # add timestamp column
+    engine.execute('ALTER TABLE api_data_processed ADD COLUMN created_at TIMESTAMP;')
+    # set default for new rows to now
+    engine.execute('ALTER TABLE api_data_processed ALTER COLUMN created_at SET DEFAULT now();')
