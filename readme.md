@@ -74,7 +74,7 @@ We examined relationships between features and found that they were mostly not c
 
 <br>
 <p align="center">
-<img src="images/corr_plot.png" width="80%" alttext="correlation plot">
+<img src="images/corr_plot.png" width="95%" alttext="correlation plot">
 </p>
 <br>
 
@@ -85,13 +85,13 @@ We setup a cloud instance (EC2) on Amazon Web Services (AWS) and instantiated a 
 ## Modeling
 
 ### Accuracy metrics selected
-We selected the F1 score: harmonic mean of recall and precision as our metric for model selection since the classes were imbalanced in the training data (we only had 9 % of the data as fraudulent events).  We also wanted to make sure we did not have too many false negatives, since those would be potentially costly for the business.
+We selected the F1 score (harmonic mean of recall and precision) as our metric for model selection since the classes were imbalanced in the training data (we only had 9 % of the data as fraudulent events).  We also wanted to make sure we did not have too many false negatives, since those would be potentially costly for the business.
 
 ### Validation methodology
 
-During our initial exploration of our data we expected, and quickly realized, that we were dealing with imbalanced classes. Only 9% of the transactions coming through were being labeled as Fraudulent. In order to combat this we decided to oversample our fraudulent transactions during the training process so our model was seeing a higher ratio of fraud. which helped our model from just guessing the majority class. Other techniques that were attempted were SMOTE and undersampling of the majority class, neither yielded the same results as oversampling.
+During initial exploration of our data we expected, and quickly realized, that we were dealing with imbalanced classes. Only 9% of the events in the training data were labeled as fraudulent events. In order to combat this we decided to oversample our fraudulent transactions during the training process so our model was seeing a higher ratio of fraud. which helped prevent the model from just guessing the majority class. Other techniques that were attempted were SMOTE (Synthetic Minority Over-sampling TEchnique) and undersampling of the majority class, neither yielded models that overperformed simple oversampling.
  
-With the imbalanced classes we had during our test phase we knew accuracy would not be the best metric to evaluate our model. We chose to look at the F1 score, which is the harmonic mean of recall and precision of our results from our random forest classifier model.
+With the imbalanced classes we had during our test phase we knew accuracy would not be the best metric to evaluate our model. We chose to look at the F1 score, which is the harmonic mean of recall and precision of our results from the random forest classifier model.
 
 <br>
 <p align="center">
@@ -112,7 +112,7 @@ Since ROC is not the best tool to examine model performance when we are interest
 <br>
 
 ##  Web app
-We developed and host a web app to enable review of the data and the model predictions.  This web app is implemented in python using Flask.
+We developed and host a web app to enable review of the data and the model predictions.  This web app is implemented in python using Flask and deployed on a AWS EC2 instance.
 
 ## Code overview
 * in `src/load_json_to_db.py` loads the original data into these tables:

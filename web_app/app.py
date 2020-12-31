@@ -19,10 +19,9 @@ engine = setup_db(db_details)
 
 app = Flask(__name__, root_path='./') # template_folder = 'templates/')
 
-# put model load stuff here
-
-# write function for model predict (called on pages below)
-
+# load processed api data from this table in db: api_data_processed
+query = 'SELECT * FROM api_data_processed;'
+api_data = pd.read_sql(query, con=engine)
 
 #######################################
 ### EACH OF THESE LOAD WITH EACH PAGE #
@@ -55,16 +54,33 @@ def recent10():
 def query_form():
     return render_template("query.html")
 
-# return results - this is what we need to clean up
+# return results
 @app.route('/results', methods=['GET', 'POST'])
 def results():
     try:
         n_records = int(request.form['n_records'])
-        query = f"SELECT body_length, channels, country, currency, delivery_method, description, email_domain, \
-                fb_published, has_analytics, name, org_name, \
-                sale_duration, user_age, venue_country, venue_name, created_at \
-                FROM api_data WHERE created_at IS NOT NULL ORDER BY created_at DESC LIMIT {n_records};"
-        result = pd.read_sql(query, con=engine)
+        fraud_cutoff = float(request.form['fraud_cutoff'])
+        # query = f"SELECT body_length, channels, country, currency, delivery_method, description, email_domain, \
+        #         fb_published, has_analytics, name, org_name, \
+        #         sale_duration, user_age, venue_country, venue_name, created_at \
+        #         FROM api_data WHERE created_at IS NOT NULL ORDER BY created_at DESC LIMIT {n_records};"
+        # result = pd.read_sql(query, con=engine)
+        cols = ['fraud_prob', 'body_length', 'channels', 'delivery_method', 'event_created',
+            'event_end', 'event_published', 'event_start', 'fb_published',
+            'has_analytics', 'has_header', 'has_logo', 'name_length',
+            'org_facebook', 'org_twitter', 'sale_duration', 'show_map',
+            'user_age', 'user_created', 'user_type', 'venue_latitude', 
+            'venue_longitude', 'amount', 'quantity_total', 'cost']
+        # get subset of cols
+        result = api_data.loc[:,cols]
+        # filter based on fraud cutoff value
+        result = result.loc[result['fraud_prob'] > fraud_cutoff]
+        # select subset of rows and cols we want
+        result = result.iloc[:n_records]
+        # order descending
+        result.sort_values('fraud_prob', ascending=False, inplace=True)
+        # TODO error check if no results..
+
     except:
         return f"""You have entered an incorrect value or something isn't quite working right.
                     Sorry about that!  Hit the back button and try again."""
@@ -73,7 +89,7 @@ def results():
 
 
 if __name__ == '__main__':
-    # run app
+    # run app to run on aws: run app.py 1
     # if on AWS otherwise local debug mode
     if len(sys.argv) > 1:
         app.run(host='0.0.0.0', port=33507, debug=False)
